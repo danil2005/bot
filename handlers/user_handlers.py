@@ -1,13 +1,13 @@
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
-
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from filters.fsm import FSMFillForm
 
 from lexicon.lexicon import LEXICON, LEXICON_BUTTON
 from keyboards import keyboards
+from services.services import create_questionnaire_text
 router = Router()
 
 @router.message(CommandStart(), StateFilter(default_state))
@@ -16,10 +16,10 @@ async def process_start_command(message: Message, state: FSMContext):
         LEXICON[message.text],
         reply_markup=keyboards.keyboard_no_yes
         )
-    await state.set_state(FSMFillForm.fill_questionnaire)
+    await state.set_state(FSMFillForm.is_ready_questionnaire)
 
 #Обработка ответа на вопрос заполнения анкеты
-@router.message(StateFilter(FSMFillForm.fill_questionnaire), F.text == LEXICON_BUTTON['yes'])
+@router.message(StateFilter(FSMFillForm.is_ready_questionnaire), F.text == LEXICON_BUTTON['yes'])
 async def process_yes_questionnaire(message: Message, state: FSMContext):
     await message.answer(
         LEXICON['enter_name'],
@@ -27,7 +27,7 @@ async def process_yes_questionnaire(message: Message, state: FSMContext):
         )
     await state.set_state(FSMFillForm.fill_name)
 
-@router.message(StateFilter(FSMFillForm.fill_questionnaire), F.text == LEXICON_BUTTON['no'])
+@router.message(StateFilter(FSMFillForm.is_ready_questionnaire), F.text == LEXICON_BUTTON['no'])
 async def process_no_questionnaire(message: Message, state: FSMContext):
     await message.answer(
         LEXICON['wait'],
@@ -35,7 +35,7 @@ async def process_no_questionnaire(message: Message, state: FSMContext):
         )
     await state.clear()
 
-@router.message(StateFilter(FSMFillForm.fill_questionnaire))
+@router.message(StateFilter(FSMFillForm.is_ready_questionnaire))
 async def process_other_questionnaire(message: Message):
     await message.answer(
         LEXICON['use_btn_pls'],
@@ -93,10 +93,34 @@ async def process_height_error(message: Message):
 @router.message(StateFilter(FSMFillForm.fill_weight), F.text.isdigit())
 async def process_weight(message: Message, state: FSMContext):
     await state.update_data(weight=message.text)
-    await message.answer('Хуй')
-    #await state.set_state(FSMFillForm.fill_weight)
+    await message.answer(create_questionnaire_text(await state.get_data()),
+                         reply_markup=keyboards.keyboard_no_yes)
+    await state.set_state(FSMFillForm.is_correct_questionnaire)
 
-@router.message(StateFilter(FSMFillForm.fill_height))
+@router.message(StateFilter(FSMFillForm.fill_weight))
 async def process_weight_error(message: Message):
     await message.answer(LEXICON['error_weight'])
+
+#Верна ли анкета
+@router.message(StateFilter(FSMFillForm.is_correct_questionnaire), F.text == LEXICON_BUTTON['yes'])
+async def process_yes_correct_q(message: Message, state: FSMContext):
+    await message.answer(
+        LEXICON['questionnaire_ready'],
+        reply_markup=ReplyKeyboardRemove())
+    await state.set_state(FSMFillForm.questionnaire_ready)
+
+@router.message(StateFilter(FSMFillForm.is_correct_questionnaire), F.text == LEXICON_BUTTON['no'])
+async def process_no_correct_q(message: Message, state: FSMContext):
+    await message.answer(
+        LEXICON['questionnaire_again'],
+        reply_markup=ReplyKeyboardRemove())
+    await message.answer(LEXICON['enter_name'])
+    await state.clear()
+    await state.set_state(FSMFillForm.fill_name)
+
+@router.message(StateFilter(FSMFillForm.is_correct_questionnaire))
+async def process_error_correct_q(message: Message):
+    await message.answer(
+        LEXICON['use_btn_pls'],
+        reply_markup=keyboards.keyboard_no_yes)
 
