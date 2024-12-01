@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
 from handlers import other_handlers, user_handlers
 from keyboards.main_menu import set_main_menu
+from filters.fsm import storage
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ async def main():
 
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
-    dp = Dispatcher()
+    dp = Dispatcher(storage=storage)
 
     # Настраиваем главное меню бота
     await set_main_menu(bot)
