@@ -8,6 +8,7 @@ from filters.fsm import FSMFillForm
 from lexicon.lexicon import LEXICON, LEXICON_BUTTON
 from keyboards import keyboards
 from services.services import create_questionnaire_text
+from database.database import add_questionnaire_db
 
 router = Router()
 
@@ -27,6 +28,7 @@ async def process_yes_questionnaire(message: Message, state: FSMContext):
         reply_markup=ReplyKeyboardRemove()
         )
     await state.set_state(FSMFillForm.fill_name)
+    await state.update_data(chat_id=message.chat.id)
 
 @router.message(StateFilter(FSMFillForm.is_ready_questionnaire), F.text == LEXICON_BUTTON['no'])
 async def process_no_questionnaire(message: Message, state: FSMContext):
@@ -59,7 +61,7 @@ async def process_name_error(message: Message):
 async def process_old(message: Message, state: FSMContext):
     await message.answer(LEXICON['enter_gender'], 
                          reply_markup=keyboards.keyboard_gender)
-    await state.update_data(old=message.text)
+    await state.update_data(old=int(message.text))
     await state.set_state(FSMFillForm.fill_gender)
 
 @router.message(StateFilter(FSMFillForm.fill_age))
@@ -83,7 +85,7 @@ async def process_gender_error(message: Message):
 @router.message(StateFilter(FSMFillForm.fill_height), F.text.isdigit())
 async def process_height(message: Message, state: FSMContext):
     await message.answer(LEXICON['enter_weight'])
-    await state.update_data(height=message.text)
+    await state.update_data(height=int(message.text))
     await state.set_state(FSMFillForm.fill_weight)
 
 @router.message(StateFilter(FSMFillForm.fill_height))
@@ -93,7 +95,7 @@ async def process_height_error(message: Message):
 #Вес
 @router.message(StateFilter(FSMFillForm.fill_weight), F.text.isdigit())
 async def process_weight(message: Message, state: FSMContext):
-    await state.update_data(weight=message.text)
+    await state.update_data(weight=int(message.text))
     await message.answer(create_questionnaire_text(await state.get_data()),
                          reply_markup=keyboards.keyboard_no_yes)
     await state.set_state(FSMFillForm.is_correct_questionnaire)
@@ -109,6 +111,7 @@ async def process_yes_correct_q(message: Message, state: FSMContext):
         LEXICON['questionnaire_ready'],
         reply_markup=ReplyKeyboardRemove())
     await state.set_state(FSMFillForm.questionnaire_ready)
+    add_questionnaire_db(await state.get_data())
 
 @router.message(StateFilter(FSMFillForm.is_correct_questionnaire), F.text == LEXICON_BUTTON['no'])
 async def process_no_correct_q(message: Message, state: FSMContext):
