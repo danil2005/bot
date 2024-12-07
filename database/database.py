@@ -1,7 +1,12 @@
 import sqlite3
 
-def add_questionnaire(data: dict):
-    with sqlite3.connect("example.db") as conn:
+def add_questionnaire_db(data: dict):
+    d = data.values()
+    d = tuple(d)
+    with sqlite3.connect("bot_gym_db.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users")
-        rows = cursor.fetchall()
+        cursor.execute('''
+                       INSERT INTO users
+                       VALUES (?,?,?,?,?,?)''',
+                       d)
+        conn.commit()
