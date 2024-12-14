@@ -106,15 +106,18 @@ async def process_weight_error(message: Message):
 
 #Верна ли анкета
 @router.message(StateFilter(FSMFillForm.is_correct_questionnaire), F.text == LEXICON_BUTTON['yes'])
-async def process_yes_correct_q(message: Message, state: FSMContext):
+async def process_yes_correct_que(message: Message, state: FSMContext):
     await message.answer(
         LEXICON['questionnaire_ready'],
         reply_markup=ReplyKeyboardRemove())
-    await state.set_state(FSMFillForm.questionnaire_ready)
+    await state.set_state(FSMFillForm.main_menu)
     add_questionnaire_db(await state.get_data())
+    await message.answer(
+        LEXICON['menu'],
+        reply_markup=keyboards.inline_kb_main_menu)
 
 @router.message(StateFilter(FSMFillForm.is_correct_questionnaire), F.text == LEXICON_BUTTON['no'])
-async def process_no_correct_q(message: Message, state: FSMContext):
+async def process_no_correct_que(message: Message, state: FSMContext):
     await message.answer(
         LEXICON['questionnaire_again'],
         reply_markup=ReplyKeyboardRemove())
@@ -123,7 +126,7 @@ async def process_no_correct_q(message: Message, state: FSMContext):
     await state.set_state(FSMFillForm.fill_name)
 
 @router.message(StateFilter(FSMFillForm.is_correct_questionnaire))
-async def process_error_correct_q(message: Message):
+async def process_error_correct_que(message: Message):
     await message.answer(
         LEXICON['use_btn_pls'],
         reply_markup=keyboards.keyboard_no_yes)

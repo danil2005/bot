@@ -15,6 +15,7 @@ LEXICON: dict[str, str] = {
     'wait': 'Если передумаете, просто нажмите кнопку /start.',
     'questionnaire_ready': 'Анкета готова!\nТеперь можно начать составлять программы тренировок и тренироваться.',
     'questionnaire_again': 'Тогда давайте заполним анкету заново.',
+    'menu': 'Меню:',
 }
 
 LEXICON_COMMANDS: dict[str, str] = {
@@ -29,3 +30,7 @@ LEXICON_BUTTON : dict[str, str] = {
     'female': 'Женский',
 }
 
+LEXICON_MAIN_MENU : dict[str, str] = {
+    'start_workout': 'Начать тренировку',
+    'fix_weight': 'Зафиксировать вес'
+}

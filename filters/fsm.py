@@ -4,6 +4,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 storage = MemoryStorage()
 
 class FSMFillForm(StatesGroup):
+    #Анкета
     is_ready_questionnaire = State()        # Состояние ожидания ответа на готовность заполнить анкету
     fill_name = State()        # Состояние ожидания ввода имени
     fill_age = State()         # Состояние ожидания ввода возраста
@@ -11,5 +12,7 @@ class FSMFillForm(StatesGroup):
     fill_height = State()      # Состояние ожидания ввода роста
     fill_weight = State()      # Состояние ожидания ввода веса
     is_correct_questionnaire = State()      # Состояние ожидания ответа на корректность анкеты
-    questionnaire_ready = State()      # анкета готова
+
+    #
+    main_menu = State()         # основное меню
 
