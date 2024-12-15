@@ -15,7 +15,11 @@ LEXICON: dict[str, str] = {
     'wait': 'Если передумаете, просто нажмите кнопку /start.',
     'questionnaire_ready': 'Анкета готова!\nТеперь можно начать составлять программы тренировок и тренироваться.',
     'questionnaire_again': 'Тогда давайте заполним анкету заново.',
-    'menu': 'Меню:',
+    'menu': 'Меню',
+    'enter_name_workout': 'Введите название тренировки', 
+    'create_workout_success': 'Тренировкка создана',
+    'repeat_name_workout': 'Тренировка с таким названием уже существует.\nВведите другое название либо удалите тренировку с таким же названием.',
+    'select_archive': 'Выберите тренировки для архивации',
 }
 
 LEXICON_COMMANDS: dict[str, str] = {
@@ -31,6 +35,17 @@ LEXICON_BUTTON : dict[str, str] = {
 }
 
 LEXICON_MAIN_MENU : dict[str, str] = {
-    'start_workout': 'Начать тренировку',
+    'edit_workouts': 'Редактировать тренировки',
     'fix_weight': 'Зафиксировать вес'
+}
+
+LEXICON_ARCHIVE_MENU : dict[str, str] = {
+    'ready': 'Готово'
+}
+
+LEXICON_EDIT_WORKOUTS : dict[str, str] = {
+    'create_workout': 'Создать',
+    'archive': 'Архивировать',
+    'delite': 'Удалить',
+    'add_archive': 'Добавить из архива',
 }

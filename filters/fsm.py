@@ -13,6 +13,10 @@ class FSMFillForm(StatesGroup):
     fill_weight = State()      # Состояние ожидания ввода веса
     is_correct_questionnaire = State()      # Состояние ожидания ответа на корректность анкеты
 
-    #
     main_menu = State()         # основное меню
+    edite_workouts = State()    #Редактировать тренировки
+    archive = State()           #Архивировать тренировки
+    enter_name_workout = State()  #ожидание ввода названия тренировки
+
+
 

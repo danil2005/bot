@@ -114,7 +114,7 @@ async def process_yes_correct_que(message: Message, state: FSMContext):
     add_questionnaire_db(await state.get_data())
     await message.answer(
         LEXICON['menu'],
-        reply_markup=keyboards.inline_kb_main_menu)
+        reply_markup=keyboards.inline_kb_main_menu(message.chat.id))
 
 @router.message(StateFilter(FSMFillForm.is_correct_questionnaire), F.text == LEXICON_BUTTON['no'])
 async def process_no_correct_que(message: Message, state: FSMContext):

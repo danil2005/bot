@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
 from handlers import other_handlers, questionnaire_handlers, workouts_handlers
 from keyboards.main_menu import set_main_menu
-from filters.fsm import storage
+from aiogram_sqlite_storage.sqlitestore import SQLStorage
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ async def main():
 
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
+    storage = SQLStorage('my_db_path.db', serializing_method='pickle')
     dp = Dispatcher(storage=storage)
 
     # Настраиваем главное меню бота
@@ -34,8 +35,8 @@ async def main():
 
     # Регистриуем роутеры в диспетчере
     dp.include_router(questionnaire_handlers.router)
-    dp.include_router(other_handlers.router)
     dp.include_router(workouts_handlers.router)
+    dp.include_router(other_handlers.router)
     
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
