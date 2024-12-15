@@ -3,7 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
-from handlers import other_handlers, questionnaire_handlers, workouts_handlers
+from handlers import other_handlers, questionnaire_handlers, workouts_handlers, edit_workouts_handlers
 from keyboards.main_menu import set_main_menu
 from aiogram_sqlite_storage.sqlitestore import SQLStorage
 
@@ -35,6 +35,7 @@ async def main():
 
     # Регистриуем роутеры в диспетчере
     dp.include_router(questionnaire_handlers.router)
+    dp.include_router(edit_workouts_handlers.router)
     dp.include_router(workouts_handlers.router)
     dp.include_router(other_handlers.router)
     
