@@ -20,6 +20,9 @@ LEXICON: dict[str, str] = {
     'create_workout_success': 'Тренировкка создана',
     'repeat_name_workout': 'Тренировка с таким названием уже существует.\nВведите другое название либо удалите тренировку с таким же названием.',
     'select_archive': 'Выберите тренировки для архивации',
+    'delite': 'Выберите тренировки для удаления',
+    'dearchive': 'Выберите тренировки для восстановления из архива',
+
 }
 
 LEXICON_COMMANDS: dict[str, str] = {
@@ -39,7 +42,7 @@ LEXICON_MAIN_MENU : dict[str, str] = {
     'fix_weight': 'Зафиксировать вес'
 }
 
-LEXICON_ARCHIVE_MENU : dict[str, str] = {
+LEXICON_EDIT_ACTION : dict[str, str] = {
     'ready': 'Готово'
 }
 
@@ -47,5 +50,6 @@ LEXICON_EDIT_WORKOUTS : dict[str, str] = {
     'create_workout': 'Создать',
     'archive': 'Архивировать',
     'delite': 'Удалить',
-    'add_archive': 'Добавить из архива',
+    'dearchive': 'Добавить из архива',
+    'main_menu': 'Главное меню',
 }

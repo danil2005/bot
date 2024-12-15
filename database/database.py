@@ -32,7 +32,7 @@ def add_new_workout (id: int, name: str):
         conn.commit()
     return True
     
-def get_active_workout(id: int) -> tuple:
+def get_active_workouts(id: int) -> tuple:
     with sqlite3.connect("bot_gym_db.db") as conn:
         cursor = conn.cursor()
         cursor.execute('''
@@ -42,6 +42,52 @@ def get_active_workout(id: int) -> tuple:
         rows = cursor.fetchall()
         conn.commit()
     return rows
-    
 
+def get_deactive_workouts(id: int) -> tuple:
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT id, name FROM Workout_types
+                       WHERE id_user = ? AND is_active = 0''',
+                       (id, ))
+        rows = cursor.fetchall()
+        conn.commit()
+    return rows
 
+def get_all_workouts(id: int) -> tuple:
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT id, name FROM Workout_types
+                       WHERE id_user = ?''',
+                       (id, ))
+        rows = cursor.fetchall()
+        conn.commit()
+    return rows
+
+def deactive_workout(workout: str):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       UPDATE Workout_types SET is_active = 0
+                       WHERE id = ?''',
+                       (int(workout), ))
+        conn.commit()
+
+def active_workout(workout: str):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       UPDATE Workout_types SET is_active = 1
+                       WHERE id = ?''',
+                       (int(workout), ))
+        conn.commit()
+
+def delite_workout(workout: str):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       DELETE FROM Workout_types
+                       WHERE id = ?''',
+                       (int(workout), ))
+        conn.commit()
