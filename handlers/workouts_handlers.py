@@ -6,15 +6,90 @@ from aiogram.fsm.state import default_state
 from filters.fsm import FSMFillForm
 
 from lexicon.lexicon import LEXICON, LEXICON_MAIN_MENU
+from lexicon import lexicon
 from keyboards import keyboards
 from database import database
 
 router = Router()
 
+#Меню тренировки
+@router.callback_query(StateFilter(FSMFillForm.main_menu), F.data.isdigit())
+async def process_menu_workout(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(workout_type=callback.data)
+    await callback.answer()
+    await callback.message.edit_text(text=database.get_name_workout(callback.data),
+                                     reply_markup=keyboards.inline_kb_menu_workouts(callback.message.chat.id))
+    await state.set_state(FSMFillForm.menu_workout)
+
+#Вернуться в меню
+@router.callback_query(StateFilter(FSMFillForm.menu_workout), F.data == 'main_menu')
+async def process_back_menu(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await callback.message.edit_text(LEXICON['menu'],
+                                     reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id))
+    await state.set_state(FSMFillForm.main_menu)
+    
+#Старт тренировки
+@router.callback_query(StateFilter(FSMFillForm.menu_workout), F.data == 'start')
+async def process_do_workout(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    id_workout = database.start_workout(callback.message.chat.id, data['workout_type'])
+    await state.update_data(workout=id_workout)
+    await callback.answer()
+    await callback.message.edit_text(callback.message.text,
+                                     reply_markup=keyboards.inline_kb_do_workout(data['workout_type']))
+    await state.set_state(FSMFillForm.do_workout)
+
+#Новое упражнение
+@router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == 'new')
+async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await callback.message.delete()
+    await callback.message.answer(LEXICON['enter_name_exercise'])
+    await state.set_state(FSMFillForm.enter_name_exercise)
+
+#Конец тренировки
+@router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == 'end')
+async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.answer()
+    database.end_workout(data['workout'])
+    #await callback.message.delete()
+    #await callback.message.answer(LEXICON['enter_name_exercise'])
+    #await state.set_state(FSMFillForm.enter_name_exercise)
+
+#Ввод названия упражнения
+@router.message(StateFilter(FSMFillForm.enter_name_exercise))
+async def process_enter_name_exercise(message: Message, state: FSMContext):
+    id_exercise = database.add_new_exercise(message.chat.id, message.text)
+    if id_exercise:
+        await message.answer(message.text + ': ',
+                             reply_markup=keyboards.inline_kb_do_exercise(message.chat.id))
+        await state.set_state(FSMFillForm.do_exercise)
+        await state.update_data(exercise_type=id_exercise, weights = [])
+    else:
+        await message.answer(LEXICON['repeat_name_exercise'])
+
+#Выполнение упражнения
+@router.message(StateFilter(FSMFillForm.do_exercise))
+async def process_do_exercise(message: Message, state: FSMContext):
+    data = await state.get_data()
+    data['weights'].append(message.text)
+    await state.update_data(weights=data['weights'])
+    text = database.get_name_exercise(data['exercise_type']) + ': ' + ' | '.join(data['weights'])
+    await message.answer(text=text,
+                         reply_markup=keyboards.inline_kb_do_exercise(message.chat.id))
+    
+#Закончить упражнение
+@router.callback_query(StateFilter(FSMFillForm.do_exercise), F.data == 'finish')
+async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    data = await state.get_data()
+    database.end_exercise(data['exercise_type'], data['workout'], data['weights'])
+    await callback.message.edit_text(database.get_name_workout(data['workout_type']) + '\n' + lexicon.weight_workout(data['workout']),
+                                     reply_markup=keyboards.inline_kb_start_workout(callback.message.chat.id))
+    await state.set_state(FSMFillForm.do_workout)
 
 
-    
-    
-    
 
 

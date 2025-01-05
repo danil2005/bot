@@ -14,11 +14,19 @@ class FSMFillForm(StatesGroup):
     is_correct_questionnaire = State()      # Состояние ожидания ответа на корректность анкеты
 
     main_menu = State()         # основное меню
+
     edite_workouts = State()    #Редактировать тренировки
     archive = State()           #Архивировать тренировки
     delite = State()            #Удалить тренировки
     dearchive = State()           #Восстановить из архива тренировку
     enter_name_workout = State()  #ожидание ввода названия тренировки
+
+    menu_workout = State()
+    do_workout = State()
+    enter_name_exercise = State()  #ожидание ввода названия упражнения
+    do_exercise = State()
+
+
 
 
 

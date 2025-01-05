@@ -110,8 +110,9 @@ async def process_yes_correct_que(message: Message, state: FSMContext):
     await message.answer(
         LEXICON['questionnaire_ready'],
         reply_markup=ReplyKeyboardRemove())
-    await state.set_state(FSMFillForm.main_menu)
     add_questionnaire_db(await state.get_data())
+    await state.clear()
+    await state.set_state(FSMFillForm.main_menu)
     await message.answer(
         LEXICON['menu'],
         reply_markup=keyboards.inline_kb_main_menu(message.chat.id))

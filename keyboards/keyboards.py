@@ -44,7 +44,18 @@ def inline_kb_dearchive_workouts(id: int) -> InlineKeyboardMarkup:
     data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
     return create_inline_keyboard(data)
 
+def inline_kb_menu_workouts(id: int) -> InlineKeyboardMarkup:
+    data = list(lexicon.WORKOUT_MENU.items())
+    return create_inline_keyboard(data)
 
+def inline_kb_do_workout(type_workout: int) -> InlineKeyboardMarkup:
+    data = list(lexicon.START_WORKOUT.items())
+    return create_inline_keyboard(data)
+
+def inline_kb_do_exercise(id: int) -> InlineKeyboardMarkup:
+    
+    data = list(lexicon.DO_EXERCISE.items())
+    return create_inline_keyboard(data)
 
 
 
