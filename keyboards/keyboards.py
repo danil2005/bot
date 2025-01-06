@@ -49,11 +49,11 @@ def inline_kb_menu_workouts(id: int) -> InlineKeyboardMarkup:
     return create_inline_keyboard(data)
 
 def inline_kb_do_workout(type_workout: int) -> InlineKeyboardMarkup:
-    data = list(lexicon.START_WORKOUT.items())
+    exercises = list(database.get_workout_exercises(type_workout))
+    data = exercises + list(lexicon.START_WORKOUT.items())
     return create_inline_keyboard(data)
 
 def inline_kb_do_exercise(id: int) -> InlineKeyboardMarkup:
-    
     data = list(lexicon.DO_EXERCISE.items())
     return create_inline_keyboard(data)
 

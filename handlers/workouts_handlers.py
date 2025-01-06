@@ -17,7 +17,7 @@ router = Router()
 async def process_menu_workout(callback: CallbackQuery, state: FSMContext):
     await state.update_data(workout_type=callback.data)
     await callback.answer()
-    await callback.message.edit_text(text=database.get_name_workout(callback.data),
+    await callback.message.edit_text(text=lexicon.workout_type_text(callback.data) ,
                                      reply_markup=keyboards.inline_kb_menu_workouts(callback.message.chat.id))
     await state.set_state(FSMFillForm.menu_workout)
 
@@ -27,6 +27,7 @@ async def process_back_menu(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(LEXICON['menu'],
                                      reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id))
+    await state.clear()
     await state.set_state(FSMFillForm.main_menu)
     
 #Старт тренировки
@@ -39,6 +40,14 @@ async def process_do_workout(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(callback.message.text,
                                      reply_markup=keyboards.inline_kb_do_workout(data['workout_type']))
     await state.set_state(FSMFillForm.do_workout)
+
+#Выбор упражнения по кнопке
+@router.callback_query(StateFilter(FSMFillForm.do_workout), F.data.isdigit())
+async def process_select_workout(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(database.get_name_exercise(callback.data) + ': ',
+                            reply_markup=keyboards.inline_kb_do_exercise(callback.message.chat.id))
+    await state.set_state(FSMFillForm.do_exercise)
+    await state.update_data(exercise_type=int(callback.data), weights = [])
 
 #Новое упражнение
 @router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == 'new')
@@ -54,9 +63,10 @@ async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.answer()
     database.end_workout(data['workout'])
-    #await callback.message.delete()
-    #await callback.message.answer(LEXICON['enter_name_exercise'])
-    #await state.set_state(FSMFillForm.enter_name_exercise)
+    await callback.message.edit_text(LEXICON['menu'],
+                                     reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id))
+    await state.clear()
+    await state.set_state(FSMFillForm.main_menu)
 
 #Ввод названия упражнения
 @router.message(StateFilter(FSMFillForm.enter_name_exercise))
@@ -87,7 +97,7 @@ async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     database.end_exercise(data['exercise_type'], data['workout'], data['weights'])
     await callback.message.edit_text(database.get_name_workout(data['workout_type']) + '\n' + lexicon.weight_workout(data['workout']),
-                                     reply_markup=keyboards.inline_kb_start_workout(callback.message.chat.id))
+                                     reply_markup=keyboards.inline_kb_do_workout(data['workout_type']))
     await state.set_state(FSMFillForm.do_workout)
 
 

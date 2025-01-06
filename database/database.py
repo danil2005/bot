@@ -93,6 +93,8 @@ def delite_workout(workout: str):
                        (int(workout), ))
         conn.commit()
 
+######################################################################################
+
 def get_name_workout(id: int) -> str:
     with sqlite3.connect("bot_gym_db.db") as conn:
         cursor = conn.cursor()
@@ -202,4 +204,59 @@ def end_workout(workout_id: int):
                        (end_str, duration, workout_id))
         conn.commit()
 
+def get_workout_exercises(type_workout:int):
+    #Получаем id последней тренировки
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT id
+                       FROM Workouts
+                       WHERE id_type = ? AND end IS NOT NULL
+                       ORDER BY id DESC
+                       LIMIT 1''',
+                       (type_workout, ))
+        rows = cursor.fetchall()
+    
+    #если нет записей в БД
+    if not rows:
+        return []
+
+    id_workout = rows[0][0]
+
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT  Exercises.id_type, Exercise_types.name
+                       FROM Exercises
+                       INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
+                       WHERE Exercises.id_workout = ?''',
+                       (id_workout, ))
+        rows = cursor.fetchall()
+    
+    result = [(str(i), j) for i,j in rows]
+
+    return result
+
+def get_latest_workout_ids(type_workout: int):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT id
+                       FROM Workouts
+                       WHERE id_type = ? AND end IS NOT NULL
+                       ORDER BY id DESC
+                       LIMIT ?''',
+                       (type_workout, 3))
+        rows = cursor.fetchall()
+    return [i[0] for i in rows]
+
+def get_date_workout(workout_id: int):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT data FROM Workouts
+                       WHERE id = ?''',
+                       (workout_id, ))
+        rows = cursor.fetchall()
+    return rows[0][0]
 
