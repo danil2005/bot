@@ -155,13 +155,13 @@ def start_workout(id_user, id_type):
         conn.commit()
     return last_id
 
-def end_exercise(exercise_type, workout, weight):
+def start_exercise(exercise_type, workout):
     with sqlite3.connect("bot_gym_db.db") as conn:
         cursor = conn.cursor()
         cursor.execute('''
                        INSERT INTO Exercises (id_type, id_workout, weight)
-                       VALUES (?,?,?)''',
-                       (exercise_type, workout, ' | '.join(weight)))
+                       VALUES (?,?,"")''',
+                       (exercise_type, workout))
         last_id = cursor.lastrowid
         conn.commit()
     return last_id
@@ -243,7 +243,7 @@ def get_latest_workout_ids(type_workout: int):
         cursor.execute('''
                        SELECT id
                        FROM Workouts
-                       WHERE id_type = ? AND end IS NOT NULL
+                       WHERE id_type = ?
                        ORDER BY id DESC
                        LIMIT ?''',
                        (type_workout, 3))
@@ -259,4 +259,35 @@ def get_date_workout(workout_id: int):
                        (workout_id, ))
         rows = cursor.fetchall()
     return rows[0][0]
+
+def update_exercise(id_exercise, weight):
+    #получаем вес, уже записанный
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT weight FROM Exercises
+                       WHERE id = ?''',
+                       (id_exercise, ))
+        rows = cursor.fetchall()
+    
+    if not rows[0][0]:
+        old_weight = []
+    else:
+        old_weight = rows[0][0].split(' | ')
+        
+    old_weight.append(weight)
+    text_weight = ' | '.join(old_weight)
+    #записываем новый вес
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       UPDATE Exercises SET weight = ?
+                       WHERE id = ?
+                       ''',
+                       (text_weight, id_exercise))
+        conn.commit()
+
+
+
+
 

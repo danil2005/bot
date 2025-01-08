@@ -48,8 +48,9 @@ def inline_kb_menu_workouts(id: int) -> InlineKeyboardMarkup:
     data = list(lexicon.WORKOUT_MENU.items())
     return create_inline_keyboard(data)
 
-def inline_kb_do_workout(type_workout: int) -> InlineKeyboardMarkup:
-    exercises = list(database.get_workout_exercises(type_workout))
+def inline_kb_do_workout(type_workout: int, completed_exercises: list[int] = []) -> InlineKeyboardMarkup:
+    exercises = database.get_workout_exercises(type_workout)
+    exercises = [i for i in exercises if i[0] not in completed_exercises]
     data = exercises + list(lexicon.START_WORKOUT.items())
     return create_inline_keyboard(data)
 

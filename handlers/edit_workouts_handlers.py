@@ -16,6 +16,7 @@ async def process_start_command(message: Message, state: FSMContext):
     await message.answer(
         LEXICON['menu'],
         reply_markup=keyboards.inline_kb_main_menu(message.chat.id))
+    await state.clear()
     await state.set_state(FSMFillForm.main_menu)
 
 #Редкатировать тренировки
