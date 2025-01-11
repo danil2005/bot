@@ -75,6 +75,10 @@ DO_EXERCISE: dict[str, str] = {
     'finish': 'Закончить упражнение',
 }
 
+OTHER_EXERCISE: dict[str, str] = {
+    'back': 'Назад',
+}
+
 def weight_workout(id):
     data = database.get_weight_workout(id)
     return '\n'.join([f'{i}: {j}'for i,j in data])

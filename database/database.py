@@ -287,7 +287,17 @@ def update_exercise(id_exercise, weight):
                        (text_weight, id_exercise))
         conn.commit()
 
+def get_all_exercises(chat_id:int):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT  Exercise_types.id, Exercise_types.name
+                       FROM Exercise_types
+                       WHERE Exercise_types.id_user = ?''',
+                       (chat_id, ))
+        rows = cursor.fetchall()
 
+    result = [(str(i), j) for i,j in rows]
 
-
+    return result
 

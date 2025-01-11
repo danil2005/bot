@@ -58,6 +58,13 @@ def inline_kb_do_exercise(id: int) -> InlineKeyboardMarkup:
     data = list(lexicon.DO_EXERCISE.items())
     return create_inline_keyboard(data)
 
+def inline_kb_other_exercise (chat_id: int, type_workout: int):
+    exercises = database.get_all_exercises(chat_id)
+    current_exercises = database.get_workout_exercises(type_workout)
+    current_exercises = [i[0] for i in current_exercises]
+    exercises = [i for i in exercises if i[0] not in current_exercises]
+    return create_inline_keyboard(exercises + list(lexicon.OTHER_EXERCISE.items()))
+
 
 
 

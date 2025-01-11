@@ -74,6 +74,24 @@ async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(FSMFillForm.main_menu)
 
+#Другое упражнение
+@router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == 'other')
+async def process_other_exercise(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.answer()
+    await callback.message.edit_text(text=lexicon.workout_type_text(data['workout_type']),
+                                     reply_markup=keyboards.inline_kb_other_exercise(callback.message.chat.id,
+                                                                                     data['workout_type']))
+    await state.set_state(FSMFillForm.do_workout)
+
+#Вернуться из "Другое упражнение"
+@router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == 'back')
+async def process_back(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.answer()
+    await callback.message.edit_text(text=lexicon.workout_type_text(data['workout_type']),
+                                     reply_markup=keyboards.inline_kb_do_workout(data['workout_type']))
+
 #Ввод названия упражнения
 @router.message(StateFilter(FSMFillForm.enter_name_exercise))
 async def process_enter_name_exercise(message: Message, state: FSMContext):
