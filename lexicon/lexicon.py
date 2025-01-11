@@ -26,7 +26,7 @@ LEXICON: dict[str, str] = {
     'dearchive': 'Выберите тренировки для восстановления из архива',
     'workout': 'Тренировка:',
     'enter_name_exercise': 'Введите название упражнения',
-    'repeat_name_exercise': 'Упражнение с таким названием уже существует.nВведите другое название.',
+    'repeat_name_exercise': 'Упражнение с таким названием уже существует.\nВведите другое название.',
 
 }
 
@@ -44,7 +44,7 @@ LEXICON_BUTTON : dict[str, str] = {
 
 LEXICON_MAIN_MENU : dict[str, str] = {
     'edit_workouts': 'Редактировать тренировки',
-    'fix_weight': 'Зафиксировать вес'
+    # 'fix_weight': 'Зафиксировать вес'
 }
 
 LEXICON_EDIT_ACTION : dict[str, str] = {
