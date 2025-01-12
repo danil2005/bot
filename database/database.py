@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import date, time, datetime
+from datetime import datetime
 
 def add_questionnaire_db(data: dict):
     with sqlite3.connect("bot_gym_db.db") as conn:
@@ -301,3 +301,12 @@ def get_all_exercises(chat_id:int):
 
     return result
 
+def get_info_workout(workout_id: int):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT data, start, duration, id_type FROM Workouts
+                       WHERE id = ?''',
+                       (workout_id, ))
+        row = cursor.fetchone()
+    return row

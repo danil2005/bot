@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from filters.fsm import FSMFillForm
 
-from lexicon.lexicon import LEXICON, LEXICON_MAIN_MENU
+from lexicon.lexicon import LEXICON
 from lexicon import lexicon
 from keyboards import keyboards
 from database import database
@@ -69,7 +69,9 @@ async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.answer()
     database.end_workout(data['workout'])
-    await callback.message.edit_text(LEXICON['menu'],
+    await callback.message.delete()
+    await callback.message.answer(lexicon.workout_end_text(data['workout']))
+    await callback.message.answer(LEXICON['menu'],
                                      reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id))
     await state.clear()
     await state.set_state(FSMFillForm.main_menu)

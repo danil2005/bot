@@ -1,4 +1,5 @@
 from database import database
+from datetime import datetime
 
 LEXICON: dict[str, str] = {
     '/start': 'Привет! Этот бот поможет вести статистику тренировок.\n'
@@ -95,7 +96,18 @@ def workout_type_text(type_workout: int):
     
     return res
 
+def workout_end_text (workout_id: int):
+    info = database.get_info_workout(workout_id)
+    name = database.get_name_workout(info[3])
 
+    date_start = datetime.strptime(info[0], "%d-%m-%Y").date()
+    time_start = datetime.strptime(info[1], "%H:%M:%S").time()
+    start = datetime.combine(date_start, time_start)
+    start_text = start.strftime("%d.%m.%y %H:%M")
+
+    res = f'{name}\n{start_text}\nПродолжительность - {info[2]} мин\n\n' + weight_workout(workout_id)
+
+    return res
 
 
 
