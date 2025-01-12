@@ -74,6 +74,7 @@ START_WORKOUT: dict[str, str] = {
 
 DO_EXERCISE: dict[str, str] = {
     'finish': 'Закончить упражнение',
+    'history': 'История'
 }
 
 OTHER_EXERCISE: dict[str, str] = {
@@ -109,6 +110,7 @@ def workout_end_text (workout_id: int):
 
     return res
 
-
+def history_exercise (id_type: int):
+    pass
 
 

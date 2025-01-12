@@ -128,7 +128,6 @@ async def process_do_exercise(message: Message, state: FSMContext):
 async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     data = await state.get_data()
-    #database.end_exercise(data['exercise_type'], data['workout'], data['weights'])
     await callback.message.edit_text(text=lexicon.workout_type_text(data['workout_type']),
                                      reply_markup=keyboards.inline_kb_do_workout(data['workout_type'], data['completed_exercises']))
     await state.set_state(FSMFillForm.do_workout)

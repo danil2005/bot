@@ -310,3 +310,16 @@ def get_info_workout(workout_id: int):
                        (workout_id, ))
         row = cursor.fetchone()
     return row
+
+def get_history(exercise_type: int):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                        SELECT Workout_types.name, Workouts.data, Workouts.start, Exercises.weight
+                        FROM Exercises
+                        JOIN Workouts ON Exercises.id_workout = Workouts.id
+                        JOIN Workout_types ON Workouts.id_type = Workout_types.id;
+                        WHERE Exercises.id_workout = ?
+                        LIMIT 5''',
+                        (exercise_type, ))
+        rows = cursor.fetchall()
