@@ -323,3 +323,4 @@ def get_history(exercise_type: int):
                         LIMIT 5''',
                         (exercise_type, ))
         rows = cursor.fetchall()
+    return rows

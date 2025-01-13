@@ -81,6 +81,10 @@ OTHER_EXERCISE: dict[str, str] = {
     'back': 'Назад',
 }
 
+HISTORY_EXERCISE: dict[str, str] = {
+    'back': 'Назад',
+}
+
 def weight_workout(id):
     data = database.get_weight_workout(id)
     return '\n'.join([f'{i}: {j}'for i,j in data])
@@ -111,6 +115,11 @@ def workout_end_text (workout_id: int):
     return res
 
 def history_exercise (id_type: int):
-    pass
+    data = database.get_history(id_type)
+    res = ''
+    for name, date, time, weights in data:
+        res += f'{name} {date} {time}: {weights}\n'
+
+    
 
 

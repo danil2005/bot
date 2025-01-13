@@ -65,7 +65,7 @@ async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
 
 #Конец тренировки
 @router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == 'end')
-async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
+async def process_end_workout(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.answer()
     database.end_workout(data['workout'])
@@ -125,12 +125,30 @@ async def process_do_exercise(message: Message, state: FSMContext):
     
 #Закончить упражнение
 @router.callback_query(StateFilter(FSMFillForm.do_exercise), F.data == 'finish')
-async def process_new_exercise(callback: CallbackQuery, state: FSMContext):
+async def process_end_exercise(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     data = await state.get_data()
     await callback.message.edit_text(text=lexicon.workout_type_text(data['workout_type']),
                                      reply_markup=keyboards.inline_kb_do_workout(data['workout_type'], data['completed_exercises']))
     await state.set_state(FSMFillForm.do_workout)
+
+#История упражнения
+@router.callback_query(StateFilter(FSMFillForm.do_exercise), F.data == 'history')
+async def process_history_exercise(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    data = await state.get_data()
+    await callback.message.edit_text(text=lexicon.history_exercise(data['exercise_type']),
+                                     reply_markup=keyboards.inline_kb_history_exercise())
+    await state.set_state(FSMFillForm.history_exercise)
+
+#Назад из истории упражнения
+@router.callback_query(StateFilter(FSMFillForm.do_exercise), F.data == 'back')
+async def process_back_history_exercise(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    data = await state.get_data()
+    await callback.message.edit_text(text=lexicon.workout_type_text(data['workout_type']),
+                                     reply_markup=keyboards.inline_kb_do_exercise(callback.message.chat.id))
+    await state.set_state(FSMFillForm.do_exercise)
 
 
 

@@ -65,7 +65,9 @@ def inline_kb_other_exercise (chat_id: int, type_workout: int):
     exercises = [i for i in exercises if i[0] not in current_exercises]
     return create_inline_keyboard(exercises + list(lexicon.OTHER_EXERCISE.items()))
 
-
+def inline_kb_history_exercise() -> InlineKeyboardMarkup:
+    data = list(lexicon.HISTORY_EXERCISE.items())
+    return create_inline_keyboard(data)
 
 
 
