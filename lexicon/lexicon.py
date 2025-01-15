@@ -32,57 +32,57 @@ LEXICON: dict[str, str] = {
 }
 
 LEXICON_COMMANDS: dict[str, str] = {
-    '/start': 'Старт',
-    '/help': 'Справка по работе бота'
+    '/start': '🚀 Старт 🚀',
+    '/help': '📖 Справка по работе бота 📖'
 }
 
-LEXICON_BUTTON : dict[str, str] = {
-    'yes': 'ДА',
-    'no': 'НЕТ',
-    'male': 'Мужской',
-    'female': 'Женский',
+LEXICON_BUTTON: dict[str, str] = {
+    'yes': '✅ ДА ✅',
+    'no': '❌ НЕТ ❌',
+    'male': '👨 Мужской 👨',
+    'female': '👩 Женский 👩',
 }
 
-LEXICON_MAIN_MENU : dict[str, str] = {
-    'edit_workouts': 'Редактировать тренировки',
-    # 'fix_weight': 'Зафиксировать вес'
+LEXICON_MAIN_MENU: dict[str, str] = {
+    'edit_workouts': '⚙️ Редактировать тренировки ⚙️',
+    # 'fix_weight': '⚖️ Зафиксировать вес ⚖️'
 }
 
-LEXICON_EDIT_ACTION : dict[str, str] = {
-    'ready': 'Готово'
+LEXICON_EDIT_ACTION: dict[str, str] = {
+    'ready': '✔️ Готово ✔️'
 }
 
-LEXICON_EDIT_WORKOUTS : dict[str, str] = {
-    'create_workout': 'Создать',
-    'archive': 'Архивировать',
-    'delite': 'Удалить',
-    'dearchive': 'Добавить из архива',
-    'main_menu': 'Главное меню',
+LEXICON_EDIT_WORKOUTS: dict[str, str] = {
+    'create_workout': '➕ Создать ➕',
+    'archive': '📥 Архивировать 📥',
+    'delite': '🗑️ Удалить 🗑️',
+    'dearchive': '📤 Добавить из архива 📤',
+    'main_menu': '🏠 Главное меню 🏠',
 }
 
 WORKOUT_MENU: dict[str, str] = {
-    'start': 'Старт',
-    'watch': 'Просмотр',
-    'main_menu': 'Главное меню',
+    'start': '▶️ Старт ▶️',
+    # 'watch': '👀 Просмотр 👀',
+    'main_menu': '🏠 Главное меню 🏠',
 }
 
 START_WORKOUT: dict[str, str] = {
-    'new': 'Новое упражнение',
-    'other': 'Другое упражнение',
-    'end': 'Конец тренировки',
+    'new': '🆕 Новое упражнение 🆕',
+    'other': '🔄 Другое упражнение 🔄',
+    'end': '🏁 Конец тренировки 🏁',
 }
 
 DO_EXERCISE: dict[str, str] = {
-    'finish': 'Закончить упражнение',
-    'history': 'История'
+    'finish': '✅ Закончить упражнение ✅',
+    'history': '📜 История 📜'
 }
 
 OTHER_EXERCISE: dict[str, str] = {
-    'back': 'Назад',
+    'back': '↩️ Назад ↩️',
 }
 
 HISTORY_EXERCISE: dict[str, str] = {
-    'back': 'Назад',
+    'back': '↩️ Назад ↩️',
 }
 
 def weight_workout(id):
@@ -105,12 +105,12 @@ def workout_end_text (workout_id: int):
     info = database.get_info_workout(workout_id)
     name = database.get_name_workout(info[3])
 
-    date_start = datetime.strptime(info[0], "%d-%m-%Y").date()
-    time_start = datetime.strptime(info[1], "%H:%M:%S").time()
-    start = datetime.combine(date_start, time_start)
-    start_text = start.strftime("%d.%m.%y %H:%M")
+    # date_start = datetime.strptime(info[0], "%d-%m-%Y").date()
+    # time_start = datetime.strptime(info[1], "%H:%M:%S").time()
+    # start = datetime.combine(date_start, time_start)
+    # start_text = start.strftime("%d.%m.%y %H:%M")
 
-    res = f'{name}\n{start_text}\nПродолжительность - {info[2]} мин\n\n' + weight_workout(workout_id)
+    res = f'{name}\nПродолжительность - {info[2]} мин\n\n' + weight_workout(workout_id)
 
     return res
 
@@ -118,7 +118,8 @@ def history_exercise (id_type: int):
     data = database.get_history(id_type)
     res = ''
     for name, date, time, weights in data:
-        res += f'{name} {date} {time}: {weights}\n'
+        res += f'{name}. {date} {time} - {weights}\n'
+    return res
 
     
 

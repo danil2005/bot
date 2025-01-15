@@ -142,7 +142,7 @@ async def process_history_exercise(callback: CallbackQuery, state: FSMContext):
     await state.set_state(FSMFillForm.history_exercise)
 
 #Назад из истории упражнения
-@router.callback_query(StateFilter(FSMFillForm.do_exercise), F.data == 'back')
+@router.callback_query(StateFilter(FSMFillForm.history_exercise), F.data == 'back')
 async def process_back_history_exercise(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     data = await state.get_data()

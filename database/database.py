@@ -318,8 +318,8 @@ def get_history(exercise_type: int):
                         SELECT Workout_types.name, Workouts.data, Workouts.start, Exercises.weight
                         FROM Exercises
                         JOIN Workouts ON Exercises.id_workout = Workouts.id
-                        JOIN Workout_types ON Workouts.id_type = Workout_types.id;
-                        WHERE Exercises.id_workout = ?
+                        JOIN Workout_types ON Workouts.id_type = Workout_types.id
+                        WHERE Exercises.id_type = ?
                         LIMIT 5''',
                         (exercise_type, ))
         rows = cursor.fetchall()
