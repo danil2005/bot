@@ -1,5 +1,4 @@
-
-def create_questionnaire_text (data:dict) -> str:
+def create_questionnaire_text(data: dict) -> str:
     return (
         "Вот ваша анкета:\n\n"
         f"Имя - {data['name']}\n"
@@ -9,6 +8,3 @@ def create_questionnaire_text (data:dict) -> str:
         f"Вес - {data['weight']}\n"
         "\nВсе верно?"
     )
-
-
-
