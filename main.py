@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from config_data.config import Config, load_config
+from config_data.config import config
 from handlers import (
     other_handlers,
     questionnaire_handlers,
@@ -10,7 +10,9 @@ from handlers import (
     edit_workouts_handlers,
 )
 from keyboards.main_menu import set_main_menu
-from aiogram_sqlite_storage.sqlitestore import SQLStorage
+
+from aiogram.fsm.storage.redis import RedisStorage
+from redis.asyncio import Redis
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -28,12 +30,12 @@ async def main():
     # Выводим в консоль информацию о начале запуска бота
     logger.info("Starting bot")
 
-    # Загружаем конфиг в переменную config
-    config: Config = load_config()
-
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
-    storage = SQLStorage("my_db_path.db", serializing_method="pickle")
+    
+    redis = Redis(host="localhost")
+    storage = RedisStorage(redis=redis)
+
     dp = Dispatcher(storage=storage)
 
     # Настраиваем главное меню бота
