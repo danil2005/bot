@@ -98,22 +98,22 @@ async def process_archive_ready(callback: CallbackQuery, state: FSMContext):
 
 # Удалить
 @router.callback_query(StateFilter(FSMFillForm.edite_workouts), F.data == "delite")
-async def process_delite_workout(callback: CallbackQuery, state: FSMContext):
+async def process_delete_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["delite"],
-        reply_markup=keyboards.inline_kb_delite_workouts(callback.message.chat.id),
+        reply_markup=keyboards.inline_kb_delete_workouts(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.delite)
 
 
 @router.callback_query(StateFilter(FSMFillForm.delite), F.data.isdigit())
 async def process_delite_select(callback: CallbackQuery):
-    database.delite_workout(callback.data)
+    database.delete_workout(callback.data)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["delite"],
-        reply_markup=keyboards.inline_kb_delite_workouts(callback.message.chat.id),
+        reply_markup=keyboards.inline_kb_delete_workouts(callback.message.chat.id),
     )
 
 

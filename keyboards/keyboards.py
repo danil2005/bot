@@ -48,7 +48,7 @@ def inline_kb_archive_workouts(id: int) -> InlineKeyboardMarkup:
     return create_inline_keyboard(data)
 
 
-def inline_kb_delite_workouts(id: int) -> InlineKeyboardMarkup:
+def inline_kb_delete_workouts(id: int) -> InlineKeyboardMarkup:
     workouts = database.get_all_workouts(id)
     workouts = [(str(i), j) for i, j in workouts]
     data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
