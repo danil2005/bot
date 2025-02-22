@@ -1,61 +1,194 @@
--- Начало транзакции
+-- phpMyAdmin SQL Dump
+-- version 5.2.2
+-- https://www.phpmyadmin.net/
+--
+-- Хост: db
+-- Время создания: Фев 22 2025 г., 09:05
+-- Версия сервера: 9.2.0
+-- Версия PHP: 8.2.27
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
+SET time_zone = "+00:00";
 
--- Создание таблицы Users
-CREATE TABLE IF NOT EXISTS Users (
-    chat_id BIGINT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    age INT NOT NULL,
-    gender ENUM('male', 'female', 'other') NOT NULL,
-    height INT NOT NULL,
-    weight INT NOT NULL
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- База данных: `gymbot`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `exercises`
+--
+
+CREATE TABLE `exercises` (
+  `id` int NOT NULL,
+  `id_type` int NOT NULL,
+  `weight` varchar(255) NOT NULL,
+  `id_workout` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Создание таблицы Exercise_types
-CREATE TABLE IF NOT EXISTS Exercise_types (
-    id INT AUTO_INCREMENT,
-    id_user BIGINT,
-    name VARCHAR(255),
-    sets INT,
-    reps INT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (id_user) REFERENCES Users(chat_id) ON DELETE CASCADE
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `exercise_types`
+--
+
+CREATE TABLE `exercise_types` (
+  `id` int NOT NULL,
+  `id_user` int NOT NULL,
+  `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Создание таблицы Workout_types
-CREATE TABLE IF NOT EXISTS Workout_types (
-    id INT AUTO_INCREMENT,
-    id_user BIGINT,
-    name VARCHAR(255) NOT NULL,
-    is_active TINYINT(1) NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (id_user) REFERENCES Users(chat_id) ON DELETE CASCADE
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `users`
+--
+
+CREATE TABLE `users` (
+  `chat_id` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `age` int NOT NULL,
+  `gender` varchar(50) NOT NULL,
+  `height` int NOT NULL,
+  `weight` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Создание таблицы Workouts
-CREATE TABLE IF NOT EXISTS Workouts (
-    id INT AUTO_INCREMENT,
-    id_user BIGINT,
-    id_type INT,
-    data DATE,
-    start_time DATETIME,
-    end_time DATETIME,
-    duration INT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (id_type) REFERENCES Workout_types(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_user) REFERENCES Users(chat_id) ON DELETE CASCADE
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `workouts`
+--
+
+CREATE TABLE `workouts` (
+  `id` int NOT NULL,
+  `id_user` int NOT NULL,
+  `id_type` int NOT NULL,
+  `date` date NOT NULL,
+  `start` time NOT NULL,
+  `end` time DEFAULT NULL,
+  `duration` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Создание таблицы Exercises
-CREATE TABLE IF NOT EXISTS Exercises (
-    id INT AUTO_INCREMENT,
-    id_type INT,
-    weight DECIMAL(5,2),
-    id_workout INT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (id_type) REFERENCES Exercise_types(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_workout) REFERENCES Workouts(id) ON DELETE CASCADE
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `workout_types`
+--
+
+CREATE TABLE `workout_types` (
+  `id` int NOT NULL,
+  `id_user` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `is_active` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Завершение транзакции
+--
+-- Индексы сохранённых таблиц
+--
+
+--
+-- Индексы таблицы `exercises`
+--
+ALTER TABLE `exercises`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_type` (`id_type`),
+  ADD KEY `id_workout` (`id_workout`);
+
+--
+-- Индексы таблицы `exercise_types`
+--
+ALTER TABLE `exercise_types`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`);
+
+--
+-- Индексы таблицы `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`chat_id`);
+
+--
+-- Индексы таблицы `workouts`
+--
+ALTER TABLE `workouts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_type` (`id_type`),
+  ADD KEY `id_user` (`id_user`);
+
+--
+-- Индексы таблицы `workout_types`
+--
+ALTER TABLE `workout_types`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`);
+
+--
+-- AUTO_INCREMENT для сохранённых таблиц
+--
+
+--
+-- AUTO_INCREMENT для таблицы `exercises`
+--
+ALTER TABLE `exercises`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `exercise_types`
+--
+ALTER TABLE `exercise_types`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `workouts`
+--
+ALTER TABLE `workouts`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT для таблицы `workout_types`
+--
+ALTER TABLE `workout_types`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- Ограничения внешнего ключа сохраненных таблиц
+--
+
+--
+-- Ограничения внешнего ключа таблицы `exercises`
+--
+ALTER TABLE `exercises`
+  ADD CONSTRAINT `exercises_ibfk_1` FOREIGN KEY (`id_type`) REFERENCES `exercise_types` (`id`),
+  ADD CONSTRAINT `exercises_ibfk_2` FOREIGN KEY (`id_workout`) REFERENCES `workouts` (`id`) ON DELETE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `exercise_types`
+--
+ALTER TABLE `exercise_types`
+  ADD CONSTRAINT `exercise_types_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`chat_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `workouts`
+--
+ALTER TABLE `workouts`
+  ADD CONSTRAINT `workouts_ibfk_1` FOREIGN KEY (`id_type`) REFERENCES `workout_types` (`id`),
+  ADD CONSTRAINT `workouts_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`chat_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `workout_types`
+--
+ALTER TABLE `workout_types`
+  ADD CONSTRAINT `workout_types_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`chat_id`);
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

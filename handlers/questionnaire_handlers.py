@@ -87,7 +87,7 @@ async def process_old_error(message: Message):
 )
 async def process_gender(message: Message, state: FSMContext):
     await message.answer(LEXICON["enter_height"], reply_markup=ReplyKeyboardRemove())
-    await state.update_data(gender=message.text)
+    await state.update_data(gender=message.text.strip(LEXICON_BUTTON["male"][0]+LEXICON_BUTTON["female"][0]))
     await state.set_state(FSMFillForm.fill_height)
 
 
