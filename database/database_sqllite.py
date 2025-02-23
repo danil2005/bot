@@ -1,5 +1,26 @@
 import sqlite3
+import os
 from datetime import datetime
+from config_data.config import config
+
+def check_db ():
+    if not os.path.exists("bot_gym_db.db"):
+        # Если файл не существует, создаем новую базу данных
+        open("bot_gym_db.db", 'w').close()
+    else:
+        return
+    
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        with open('create_tables_sqllite.sql', 'r', encoding='utf-8') as file:
+            sql_script = file.read()
+        sql_commands = sql_script.split(';')
+
+        cursor = conn.cursor()
+        for command in sql_commands:
+            if command.strip():
+                cursor.execute(command)
+        conn.commit()
+
 
 def add_questionnaire_db(data: dict):
     with sqlite3.connect("bot_gym_db.db") as conn:

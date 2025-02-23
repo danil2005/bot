@@ -11,6 +11,33 @@ def get_db_connection():
         database=config.data_base.database
     )
 
+def check_db ():
+    config_db = {
+        'host': config.data_base.host,
+        'user': config.data_base.user,
+        'password': config.data_base.password,
+    }
+
+    with pymysql.connect(**config_db) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(f"SHOW DATABASES LIKE '{config.data_base.name_db}'")
+            result = cursor.fetchone()
+            if not result:
+                cursor.execute(f"CREATE DATABASE {config.data_base.name_db}")
+            else:
+                return
+            
+        conn.select_db(config.data_base.name_db)
+
+        with open('create_tables_mysql.sql', 'r', encoding='utf-8') as file:
+            sql_script = file.read()
+        sql_commands = sql_script.split(';')
+
+        with conn.cursor() as cursor:
+            for command in sql_commands:
+                if command.strip():
+                    cursor.execute(command)
+            
 def add_questionnaire_db(data: dict):
     with get_db_connection() as conn:
         with conn.cursor() as cursor:

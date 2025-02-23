@@ -13,7 +13,7 @@ class DataBase:
     host: str  # хост, на котором работает MySQL
     user: str  # ваше имя пользователя
     password: str  # ваш пароль
-    database: str  # название базы данных
+    name_db: str  # название базы данных
 
 
 @dataclass
@@ -34,7 +34,7 @@ def load_config(path: str | None = None) -> Config:
             host=env("HOST_DB"),
             user=env("USER_DB"),
             password=env("PASSWORD_DB"),
-            database=env("NAME_DB"),
+            name_db=env("NAME_DB"),
         ),
         type_db=env("TYPE_DB"),
     )

@@ -14,6 +14,8 @@ from keyboards.main_menu import set_main_menu
 from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis
 
+from database.database import check_db
+
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,9 @@ async def main():
 
     # Выводим в консоль информацию о начале запуска бота
     logger.info("Starting bot")
+
+    # Проверяем базу данных
+    check_db()
 
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
