@@ -8,7 +8,7 @@ def get_db_connection():
         host=config.data_base.host,
         user=config.data_base.user,
         password=config.data_base.password,
-        database=config.data_base.database
+        database=config.data_base.name_db
     )
 
 def check_db ():

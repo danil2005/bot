@@ -52,11 +52,16 @@ async def process_create_workout(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
     await callback.message.answer(LEXICON["enter_name_workout"])
     await state.set_state(FSMFillForm.enter_name_workout)
+    await state.update_data(message_id=callback.message.message_id + 1)
 
 
 @router.message(StateFilter(FSMFillForm.enter_name_workout))
 async def process_enter_name_workout(message: Message, state: FSMContext):
     if database.add_new_workout(message.chat.id, message.text):
+        data = await state.get_data()
+        for i in range(data['message_id'], message.message_id + 1):
+            await message.bot.delete_message(message.chat.id, i)
+
         await message.answer(
             LEXICON["menu"], reply_markup=keyboards.inline_kb_main_menu(message.chat.id)
         )
