@@ -122,6 +122,18 @@ async def process_back(callback: CallbackQuery, state: FSMContext):
         reply_markup=keyboards.inline_kb_do_workout(data["workout_type"]),
     )
 
+# Другое упражнение
+@router.callback_query(StateFilter(FSMFillForm.do_workout), F.data == "delete")
+async def process_delete_exercise(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.answer()
+    await callback.message.edit_text(
+        text=LEXICON['delete_exercise'],
+        reply_markup=keyboards.inline_kb_delete_exercise(
+            callback.message.chat.id, data["workout"]
+        )
+    )
+    await state.set_state(FSMFillForm.do_workout)
 
 # Ввод названия упражнения
 @router.message(StateFilter(FSMFillForm.enter_name_exercise))

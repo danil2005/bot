@@ -92,3 +92,6 @@ def inline_kb_other_exercise(chat_id: int, type_workout: int):
 def inline_kb_history_exercise() -> InlineKeyboardMarkup:
     data = list(lexicon.HISTORY_EXERCISE.items())
     return create_inline_keyboard(data)
+
+def inline_kb_delete_exercise (chat_id: int, workout_id: int):
+    
