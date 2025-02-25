@@ -31,3 +31,5 @@ class FSMFillForm(StatesGroup):
     enter_name_exercise = State()  # ожидание ввода названия упражнения
     do_exercise = State()
     history_exercise = State()
+    delete_exercise = State()
+    

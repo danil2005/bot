@@ -84,10 +84,13 @@ HISTORY_EXERCISE: dict[str, str] = {
     "back": "↩️ Назад ↩️",
 }
 
+DELETE_EXERCISE: dict[str, str] = {
+    "back": "↩️ Назад ↩️",
+}
 
 def weight_workout(id):
     data = database.get_weight_workout(id)
-    return "\n".join([f"{i}: {j}" for i, j in data])
+    return "\n".join([f"{i}: {j}" for i, j, _ in data])
 
 
 def workout_type_text(type_workout: int):

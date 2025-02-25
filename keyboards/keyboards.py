@@ -93,5 +93,8 @@ def inline_kb_history_exercise() -> InlineKeyboardMarkup:
     data = list(lexicon.HISTORY_EXERCISE.items())
     return create_inline_keyboard(data)
 
-def inline_kb_delete_exercise (chat_id: int, workout_id: int):
-    
+def inline_kb_delete_exercise (workout_id: int):
+    exercises = database.get_weight_workout(workout_id)
+    data = [(str(k), f"{i}: {j}") for i, j, k in exercises]
+    return create_inline_keyboard(data + list(lexicon.DELETE_EXERCISE.items()))
+
