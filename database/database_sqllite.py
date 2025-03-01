@@ -191,7 +191,7 @@ def get_weight_workout(id):
     with sqlite3.connect("bot_gym_db.db") as conn:
         cursor = conn.cursor()
         cursor.execute('''
-                       SELECT Exercise_types.name, Exercises.weight 
+                       SELECT Exercise_types.name, Exercises.weight, Exercises.id
                        FROM Exercises
                        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
                        WHERE Exercises.id_workout = ?''',
@@ -345,3 +345,27 @@ def get_history(exercise_type: int):
                         (exercise_type, ))
         rows = cursor.fetchall()
     return rows
+
+def delete_exercise(exercise: int):
+    exerecise_del = get_type_exercise(exercise)
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       DELETE FROM Exercises
+                       WHERE id = ?''',
+                       (exercise,))
+        conn.commit()
+    
+    return exerecise_del
+
+def get_type_exercise(id_exercise:int):
+    with sqlite3.connect("bot_gym_db.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+                       SELECT Exercises.id_type, Exercise_types.name
+                       FROM Exercises
+                       INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
+                       WHERE Exercises.id = ?''',
+                       (id_exercise, ))
+        row = cursor.fetchone()
+    return row
