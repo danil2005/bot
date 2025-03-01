@@ -213,7 +213,8 @@ def get_weight_workout(id):
                            SELECT Exercise_types.name, Exercises.weight, Exercises.id
                            FROM Exercises
                            INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
-                           WHERE Exercises.id_workout = %s''',
+                           WHERE Exercises.id_workout = %s
+                           ORDER BY Exercises.id ASC''',
                            (id,))
             rows = cursor.fetchall()
             conn.commit()
@@ -363,6 +364,7 @@ def get_history(exercise_type: int):
     return rows
 
 def delete_exercise(exercise: int):
+    exerecise_del = get_type_exercise(exercise)
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''
@@ -370,4 +372,18 @@ def delete_exercise(exercise: int):
                            WHERE id = %s''',
                            (int(exercise),))
             conn.commit()
+    
+    return exerecise_del
+
+def get_type_exercise(id_exercise:int):
+    with get_db_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                           SELECT Exercises.id_type, Exercise_types.name
+                           FROM Exercises
+                           INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
+                           WHERE Exercises.id = %s''',
+                           (id_exercise,))
+            row = cursor.fetchone()
+    return row
             

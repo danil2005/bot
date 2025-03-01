@@ -50,7 +50,7 @@ async def process_do_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=lexicon.workout_type_text(data["workout_type"]),
-        reply_markup=keyboards.inline_kb_do_workout(data["workout_type"]),
+        reply_markup=keyboards.inline_kb_do_workout(data["workout_type"])
     )
     await state.set_state(FSMFillForm.do_workout)
 
@@ -119,7 +119,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=lexicon.workout_type_text(data["workout_type"]),
-        reply_markup=keyboards.inline_kb_do_workout(data["workout_type"]),
+        reply_markup=keyboards.inline_kb_do_workout(data["workout_type"], data["completed_exercises"]),
     )
 
 # Удалить упражнение
@@ -135,13 +135,16 @@ async def process_delete_exercise(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.delete_exercise), F.data.isdigit())
 async def process_select_exercise_for_del(callback: CallbackQuery, state: FSMContext):
-    database.delete_exercise(callback.data)
+    exerecise_del = database.delete_exercise(callback.data)
     data = await state.get_data()
+    data['completed_exercises'].remove(str(exerecise_del[0]))
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON['delete_exercise'],
         reply_markup=keyboards.inline_kb_delete_exercise(data["workout"])
     )
+    await state.update_data(completed_exercises=data["completed_exercises"])
+
 
 # Назад из истории упражнения
 @router.callback_query(StateFilter(FSMFillForm.delete_exercise), F.data == "back")
@@ -150,7 +153,7 @@ async def process_back_delete_exercise(callback: CallbackQuery, state: FSMContex
     data = await state.get_data()
     await callback.message.edit_text(
         text=lexicon.workout_type_text(data["workout_type"]),
-        reply_markup=keyboards.inline_kb_do_workout(data["workout_type"]),
+        reply_markup=keyboards.inline_kb_do_workout(data["workout_type"], data["completed_exercises"]),
     )
     await state.set_state(FSMFillForm.do_workout)
     
