@@ -88,27 +88,27 @@ DELETE_EXERCISE: dict[str, str] = {
     "back": "↩️ Назад ↩️",
 }
 
-def weight_workout(id):
-    data = database.get_weight_workout(id)
+async def weight_workout(id):
+    data = await database.get_weight_workout(id)
     return "\n".join([f"{i}: {j}" for i, j, _ in data])
 
 
-def workout_type_text(type_workout: int):
-    res = database.get_name_workout(type_workout) + "\n\n"
+async def workout_type_text(type_workout: int):
+    res = await database.get_name_workout(type_workout) + "\n\n"
     # получаем id последних тренировок
-    ids = database.get_latest_workout_ids(type_workout)
+    ids = await database.get_latest_workout_ids(type_workout)
     ids.reverse()
     for i in ids:
-        date = database.get_date_workout(i)
+        date = await database.get_date_workout(i)
         weights = weight_workout(i)
         res += date + "\n" + weights + "\n\n"
 
     return res
 
 
-def workout_end_text(workout_id: int):
-    info = database.get_info_workout(workout_id)
-    name = database.get_name_workout(info[3])
+async def workout_end_text(workout_id: int):
+    info = await database.get_info_workout(workout_id)
+    name = await database.get_name_workout(info[3])
 
     # date_start = datetime.strptime(info[0], "%d-%m-%Y").date()
     # time_start = datetime.strptime(info[1], "%H:%M:%S").time()
@@ -120,8 +120,8 @@ def workout_end_text(workout_id: int):
     return res
 
 
-def history_exercise(id_type: int):
-    data = database.get_history(id_type)
+async def history_exercise(id_type: int):
+    data = await database.get_history(id_type)
     res = ""
     for name, date, time, weights in data:
         res += f"{name}. {date} {time} - {weights}\n"

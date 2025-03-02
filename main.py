@@ -32,8 +32,8 @@ async def main():
     # Выводим в консоль информацию о начале запуска бота
     logger.info("Starting bot")
 
-    # Проверяем базу данных
-    check_db()
+    # Проверяем базу данных асинхронно
+    await check_db()
 
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
@@ -46,7 +46,7 @@ async def main():
     # Настраиваем главное меню бота
     await set_main_menu(bot)
 
-    # Регистриуем роутеры в диспетчере
+    # Регистрируем роутеры в диспетчере
     dp.include_router(questionnaire_handlers.router)
     dp.include_router(edit_workouts_handlers.router)
     dp.include_router(workouts_handlers.router)

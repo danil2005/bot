@@ -15,7 +15,7 @@ router = Router()
 @router.message(CommandStart())
 async def process_start_command(message: Message, state: FSMContext):
     await message.answer(
-        LEXICON["menu"], reply_markup=keyboards.inline_kb_main_menu(message.chat.id)
+        LEXICON["menu"], reply_markup=await keyboards.inline_kb_main_menu(message.chat.id)
     )
     await state.clear()
     await state.set_state(FSMFillForm.main_menu)
@@ -38,7 +38,7 @@ async def process_main_menu(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         LEXICON["menu"],
-        reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_main_menu(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.main_menu)
 
@@ -57,13 +57,13 @@ async def process_create_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.enter_name_workout))
 async def process_enter_name_workout(message: Message, state: FSMContext):
-    if database.add_new_workout(message.chat.id, message.text):
+    if await database.add_new_workout(message.chat.id, message.text):
         data = await state.get_data()
         for i in range(data['message_id'], message.message_id + 1):
             await message.bot.delete_message(message.chat.id, i)
 
         await message.answer(
-            LEXICON["menu"], reply_markup=keyboards.inline_kb_main_menu(message.chat.id)
+            LEXICON["menu"], reply_markup=await keyboards.inline_kb_main_menu(message.chat.id)
         )
         await state.set_state(FSMFillForm.main_menu)
     else:
@@ -76,18 +76,18 @@ async def process_archive_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["select_archive"],
-        reply_markup=keyboards.inline_kb_archive_workouts(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_archive_workouts(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.archive)
 
 
 @router.callback_query(StateFilter(FSMFillForm.archive), F.data.isdigit())
 async def process_archive_select(callback: CallbackQuery):
-    database.deactive_workout(callback.data)
+    await database.deactive_workout(callback.data)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["select_archive"],
-        reply_markup=keyboards.inline_kb_archive_workouts(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_archive_workouts(callback.message.chat.id),
     )
 
 
@@ -96,7 +96,7 @@ async def process_archive_ready(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         LEXICON["menu"],
-        reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_main_menu(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.main_menu)
 
@@ -107,18 +107,18 @@ async def process_delete_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["delete"],
-        reply_markup=keyboards.inline_kb_delete_workouts(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_delete_workouts(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.delete)
 
 
 @router.callback_query(StateFilter(FSMFillForm.delete), F.data.isdigit())
 async def process_delete_select(callback: CallbackQuery):
-    database.delete_workout(callback.data)
+    await database.delete_workout(callback.data)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["delete"],
-        reply_markup=keyboards.inline_kb_delete_workouts(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_delete_workouts(callback.message.chat.id),
     )
 
 
@@ -127,7 +127,7 @@ async def process_delete_ready(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         LEXICON["menu"],
-        reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_main_menu(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.main_menu)
 
@@ -138,18 +138,18 @@ async def process_dearchive_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["dearchive"],
-        reply_markup=keyboards.inline_kb_dearchive_workouts(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_dearchive_workouts(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.dearchive)
 
 
 @router.callback_query(StateFilter(FSMFillForm.dearchive), F.data.isdigit())
 async def process_dearchive_select(callback: CallbackQuery):
-    database.active_workout(callback.data)
+    await database.active_workout(callback.data)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["dearchive"],
-        reply_markup=keyboards.inline_kb_dearchive_workouts(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_dearchive_workouts(callback.message.chat.id),
     )
 
 
@@ -158,6 +158,6 @@ async def process_dearchive_ready(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         LEXICON["menu"],
-        reply_markup=keyboards.inline_kb_main_menu(callback.message.chat.id),
+        reply_markup=await keyboards.inline_kb_main_menu(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.main_menu)
