@@ -1,213 +1,212 @@
-import sqlite3
+import aiosqlite
 import os
 from datetime import datetime
 from config_data.config import config
 
-def check_db ():
+async def check_db():
     if not os.path.exists("bot_gym_db.db"):
         # Если файл не существует, создаем новую базу данных
         open("bot_gym_db.db", 'w').close()
     else:
         return
     
-    with sqlite3.connect("bot_gym_db.db") as conn:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
         with open('create_tables_sqllite.sql', 'r', encoding='utf-8') as file:
             sql_script = file.read()
         sql_commands = sql_script.split(';')
 
-        cursor = conn.cursor()
+        cursor = await conn.cursor()
         for command in sql_commands:
             if command.strip():
-                cursor.execute(command)
-        conn.commit()
+                await cursor.execute(command)
+        await conn.commit()
 
-
-def add_questionnaire_db(data: dict):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def add_questionnaire_db(data: dict):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        INSERT INTO Users
                        VALUES (?,?,?,?,?,?)''',
                        tuple(data.values()))
-        conn.commit()
+        await conn.commit()
 
-def check_name_workout(id: int, name: str) -> bool:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def check_name_workout(id: int, name: str) -> bool:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT * FROM Workout_types
                        WHERE id_user = ? AND name = ?''',
                        (id, name))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return bool(rows)
 
-def add_new_workout (id: int, name: str):
-    if check_name_workout(id, name):
+async def add_new_workout(id: int, name: str):
+    if await check_name_workout(id, name):
         return False
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        INSERT INTO Workout_types (id_user, name, is_active)
                        VALUES (?,?,?)''',
                        (id, name, True))
-        conn.commit()
+        await conn.commit()
     return True
     
-def get_active_workouts(id: int) -> tuple:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_active_workouts(id: int) -> tuple:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT id, name FROM Workout_types
                        WHERE id_user = ? AND is_active = 1''',
                        (id, ))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return rows
 
-def get_deactive_workouts(id: int) -> tuple:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_deactive_workouts(id: int) -> tuple:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT id, name FROM Workout_types
                        WHERE id_user = ? AND is_active = 0''',
                        (id, ))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return rows
 
-def get_all_workouts(id: int) -> tuple:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_all_workouts(id: int) -> tuple:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT id, name FROM Workout_types
                        WHERE id_user = ?''',
                        (id, ))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return rows
 
-def deactive_workout(workout: str):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def deactive_workout(workout: str):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        UPDATE Workout_types SET is_active = 0
                        WHERE id = ?''',
                        (int(workout), ))
-        conn.commit()
+        await conn.commit()
 
-def active_workout(workout: str):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def active_workout(workout: str):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        UPDATE Workout_types SET is_active = 1
                        WHERE id = ?''',
                        (int(workout), ))
-        conn.commit()
+        await conn.commit()
 
-def delete_workout(workout: str):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def delete_workout(workout: str):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        DELETE FROM Workout_types
                        WHERE id = ?''',
                        (int(workout), ))
-        conn.commit()
+        await conn.commit()
 
 ######################################################################################
 
-def get_name_workout(id: int) -> str:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_name_workout(id: int) -> str:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT name FROM Workout_types
                        WHERE id = ?''',
                        (id, ))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return rows[0][0]
 
-def check_name_exercise(id: int, name: str) -> bool:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def check_name_exercise(id: int, name: str) -> bool:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT * FROM Exercise_types
                        WHERE id_user = ? AND name = ?''',
                        (id, name))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return bool(rows)
 
-def add_new_exercise (id: int, name: str):
-    if check_name_exercise(id, name):
+async def add_new_exercise(id: int, name: str):
+    if await check_name_exercise(id, name):
         return False
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        INSERT INTO Exercise_types (id_user, name)
                        VALUES (?,?)''',
                        (id, name))
         last_id = cursor.lastrowid
-        conn.commit()
+        await conn.commit()
     return last_id
 
-def get_name_exercise(id: int) -> str:
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_name_exercise(id: int) -> str:
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT name FROM Exercise_types
                        WHERE id = ?''',
                        (id, ))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return rows[0][0]
 
-def start_workout(id_user, id_type):
+async def start_workout(id_user, id_type):
     data = datetime.today().strftime("%d-%m-%Y")
     start = datetime.now().strftime("%H:%M:%S")
 
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        INSERT INTO Workouts (id_user, id_type, data, start)
                        VALUES (?,?,?,?)''',
                        (id_user, id_type, data, start))
         last_id = cursor.lastrowid
-        conn.commit()
+        await conn.commit()
     return last_id
 
-def start_exercise(exercise_type, workout):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def start_exercise(exercise_type, workout):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        INSERT INTO Exercises (id_type, id_workout, weight)
                        VALUES (?,?,"")''',
                        (exercise_type, workout))
         last_id = cursor.lastrowid
-        conn.commit()
+        await conn.commit()
     return last_id
 
-def get_weight_workout(id):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_weight_workout(id):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT Exercise_types.name, Exercises.weight, Exercises.id
                        FROM Exercises
                        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
                        WHERE Exercises.id_workout = ?''',
                        (id, ))
-        rows = cursor.fetchall()
-        conn.commit()
+        rows = await cursor.fetchall()
+        await conn.commit()
     return rows
 
-def end_workout(workout_id: int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def end_workout(workout_id: int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT data, start FROM Workouts
                        WHERE id = ?''',
                        (workout_id, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
 
     date_start = datetime.strptime(rows[0][0], "%d-%m-%Y").date()
     time_start = datetime.strptime(rows[0][1], "%H:%M:%S").time()
@@ -217,26 +216,26 @@ def end_workout(workout_id: int):
     duration = (end-start).total_seconds()//60
     end_str = end.strftime("%H:%M:%S")
 
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        UPDATE Workouts SET end = ?, duration = ?
                        WHERE id = ?''',
                        (end_str, duration, workout_id))
-        conn.commit()
+        await conn.commit()
 
-def get_workout_exercises(type_workout:int):
+async def get_workout_exercises(type_workout:int):
     #Получаем id последней тренировки
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT id
                        FROM Workouts
                        WHERE id_type = ? AND end IS NOT NULL
                        ORDER BY id DESC
                        LIMIT 1''',
                        (type_workout, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
     
     #если нет записей в БД
     if not rows:
@@ -244,52 +243,52 @@ def get_workout_exercises(type_workout:int):
 
     id_workout = rows[0][0]
 
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT  Exercises.id_type, Exercise_types.name
                        FROM Exercises
                        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
                        WHERE Exercises.id_workout = ?''',
                        (id_workout, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
     
     result = [(str(i), j) for i,j in rows]
 
     return result
 
-def get_latest_workout_ids(type_workout: int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_latest_workout_ids(type_workout: int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT id
                        FROM Workouts
                        WHERE id_type = ?
                        ORDER BY id DESC
                        LIMIT ?''',
                        (type_workout, 3))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
     return [i[0] for i in rows]
 
-def get_date_workout(workout_id: int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_date_workout(workout_id: int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT data FROM Workouts
                        WHERE id = ?''',
                        (workout_id, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
     return rows[0][0]
 
-def update_exercise(id_exercise, weight):
+async def update_exercise(id_exercise, weight):
     #получаем вес, уже записанный
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT weight FROM Exercises
                        WHERE id = ?''',
                        (id_exercise, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
     
     if not rows[0][0]:
         old_weight = []
@@ -299,43 +298,43 @@ def update_exercise(id_exercise, weight):
     old_weight.append(weight)
     text_weight = ' | '.join(old_weight)
     #записываем новый вес
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        UPDATE Exercises SET weight = ?
                        WHERE id = ?
                        ''',
                        (text_weight, id_exercise))
-        conn.commit()
+        await conn.commit()
 
-def get_all_exercises(chat_id:int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_all_exercises(chat_id:int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT  Exercise_types.id, Exercise_types.name
                        FROM Exercise_types
                        WHERE Exercise_types.id_user = ?''',
                        (chat_id, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
 
     result = [(str(i), j) for i,j in rows]
 
     return result
 
-def get_info_workout(workout_id: int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_info_workout(workout_id: int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT data, start, duration, id_type FROM Workouts
                        WHERE id = ?''',
                        (workout_id, ))
-        row = cursor.fetchone()
+        row = await cursor.fetchone()
     return row
 
-def get_history(exercise_type: int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_history(exercise_type: int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                         SELECT Workout_types.name, Workouts.data, Workouts.start, Exercises.weight
                         FROM Exercises
                         JOIN Workouts ON Exercises.id_workout = Workouts.id
@@ -343,29 +342,29 @@ def get_history(exercise_type: int):
                         WHERE Exercises.id_type = ?
                         LIMIT 5''',
                         (exercise_type, ))
-        rows = cursor.fetchall()
+        rows = await cursor.fetchall()
     return rows
 
-def delete_exercise(exercise: int):
-    exerecise_del = get_type_exercise(exercise)
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def delete_exercise(exercise: int):
+    exerecise_del = await get_type_exercise(exercise)
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        DELETE FROM Exercises
                        WHERE id = ?''',
                        (exercise,))
-        conn.commit()
+        await conn.commit()
     
     return exerecise_del
 
-def get_type_exercise(id_exercise:int):
-    with sqlite3.connect("bot_gym_db.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
+async def get_type_exercise(id_exercise:int):
+    async with aiosqlite.connect("bot_gym_db.db") as conn:
+        cursor = await conn.cursor()
+        await cursor.execute('''
                        SELECT Exercises.id_type, Exercise_types.name
                        FROM Exercises
                        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
                        WHERE Exercises.id = ?''',
                        (id_exercise, ))
-        row = cursor.fetchone()
+        row = await cursor.fetchone()
     return row
