@@ -100,7 +100,7 @@ async def workout_type_text(type_workout: int):
     ids.reverse()
     for i in ids:
         date = await database.get_date_workout(i)
-        weights = weight_workout(i)
+        weights = await weight_workout(i)
         res += date + "\n" + weights + "\n\n"
 
     return res
@@ -115,7 +115,7 @@ async def workout_end_text(workout_id: int):
     # start = datetime.combine(date_start, time_start)
     # start_text = start.strftime("%d.%m.%y %H:%M")
 
-    res = f"{name}\nПродолжительность - {info[2]} мин\n\n" + weight_workout(workout_id)
+    res = f"{name}\nПродолжительность - {info[2]} мин\n\n" + await weight_workout(workout_id)
 
     return res
 

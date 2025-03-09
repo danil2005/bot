@@ -19,7 +19,7 @@ async def process_menu_workout(callback: CallbackQuery, state: FSMContext):
     await state.update_data(workout_type=callback.data)
     await callback.answer()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(callback.data),
+        text=await lexicon.workout_type_text(callback.data),
         reply_markup=keyboards.inline_kb_menu_workouts(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.menu_workout)
@@ -49,7 +49,7 @@ async def process_do_workout(callback: CallbackQuery, state: FSMContext):
     )
     await callback.answer()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=await keyboards.inline_kb_do_workout(data["workout_type"])
     )
     await state.set_state(FSMFillForm.do_workout)
@@ -61,7 +61,7 @@ async def process_select_exercise(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     id_exercise = await database.start_exercise(callback.data, data["workout"])
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=keyboards.inline_kb_do_exercise(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.do_exercise)
@@ -89,7 +89,7 @@ async def process_end_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await database.end_workout(data["workout"])
     await callback.message.delete()
-    await callback.message.answer(lexicon.workout_end_text(data["workout"]))
+    await callback.message.answer(await lexicon.workout_end_text(data["workout"]))
     await callback.message.answer(
         LEXICON["menu"],
         reply_markup=await keyboards.inline_kb_main_menu(callback.message.chat.id),
@@ -104,7 +104,7 @@ async def process_other_exercise(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.answer()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=await keyboards.inline_kb_other_exercise(
             callback.message.chat.id, data["workout_type"]
         ),
@@ -118,7 +118,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.answer()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=await keyboards.inline_kb_do_workout(data["workout_type"], data["completed_exercises"]),
     )
 
@@ -152,7 +152,7 @@ async def process_back_delete_exercise(callback: CallbackQuery, state: FSMContex
     await callback.answer()
     data = await state.get_data()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=await keyboards.inline_kb_do_workout(data["workout_type"], data["completed_exercises"]),
     )
     await state.set_state(FSMFillForm.do_workout)
@@ -170,7 +170,7 @@ async def process_enter_name_exercise(message: Message, state: FSMContext):
         await message.bot.edit_message_text(
             chat_id=message.chat.id,
             message_id=data["message_id"],
-            text=lexicon.workout_type_text(data["workout_type"]),
+            text=await lexicon.workout_type_text(data["workout_type"]),
             reply_markup=keyboards.inline_kb_do_exercise(message.chat.id),
         )
         await state.set_state(FSMFillForm.do_exercise)
@@ -190,7 +190,7 @@ async def process_do_exercise(message: Message, state: FSMContext):
     await message.bot.edit_message_text(
         chat_id=message.chat.id,
         message_id=data["message_id"],
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=keyboards.inline_kb_do_exercise(message.chat.id),
     )
 
@@ -201,7 +201,7 @@ async def process_end_exercise(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     data = await state.get_data()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=await keyboards.inline_kb_do_workout(
             data["workout_type"], data["completed_exercises"]
         ),
@@ -215,7 +215,7 @@ async def process_history_exercise(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     data = await state.get_data()
     await callback.message.edit_text(
-        text=lexicon.history_exercise(data["exercise_type"]),
+        text=await lexicon.history_exercise(data["exercise_type"]),
         reply_markup=keyboards.inline_kb_history_exercise(),
     )
     await state.set_state(FSMFillForm.history_exercise)
@@ -227,7 +227,7 @@ async def process_back_history_exercise(callback: CallbackQuery, state: FSMConte
     await callback.answer()
     data = await state.get_data()
     await callback.message.edit_text(
-        text=lexicon.workout_type_text(data["workout_type"]),
+        text=await lexicon.workout_type_text(data["workout_type"]),
         reply_markup=keyboards.inline_kb_do_exercise(callback.message.chat.id),
     )
     await state.set_state(FSMFillForm.do_exercise)
