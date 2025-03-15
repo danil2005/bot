@@ -32,7 +32,7 @@ def create_inline_keyboard(data):
 
 
 async def inline_kb_main_menu(id: int) -> InlineKeyboardMarkup:
-    workouts = await database.get_active_workouts(id)
+    workouts = await database.get_workouts(id, 'active')
     workouts = [(str(i), j) for i, j in workouts]
     data = workouts + list(lexicon.LEXICON_MAIN_MENU.items())
     return create_inline_keyboard(data)
@@ -42,21 +42,21 @@ inline_kb_edit_workouts = create_inline_keyboard(lexicon.LEXICON_EDIT_WORKOUTS.i
 
 
 async def inline_kb_archive_workouts(id: int) -> InlineKeyboardMarkup:
-    workouts = await database.get_active_workouts(id)
+    workouts = await database.get_workouts(id, 'active')
     workouts = [(str(i), j) for i, j in workouts]
     data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
     return create_inline_keyboard(data)
 
 
 async def inline_kb_delete_workouts(id: int) -> InlineKeyboardMarkup:
-    workouts = await database.get_all_workouts(id)
+    workouts = await database.get_workouts(id)
     workouts = [(str(i), j) for i, j in workouts]
     data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
     return create_inline_keyboard(data)
 
 
 async def inline_kb_dearchive_workouts(id: int) -> InlineKeyboardMarkup:
-    workouts = await database.get_deactive_workouts(id)
+    workouts = await database.get_workouts(id, 'deactive')
     workouts = [(str(i), j) for i, j in workouts]
     data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
     return create_inline_keyboard(data)

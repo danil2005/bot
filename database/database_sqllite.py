@@ -54,40 +54,22 @@ async def add_new_workout(id: int, name: str):
         await conn.commit()
     return True
 
-async def get_active_workouts(id: int) -> tuple:
-    query = '''
-        SELECT id, name FROM Workout_types
-        WHERE id_user = ? AND is_active = 1
-    '''
-    async with aiosqlite.connect("bot_gym_db.db") as conn:
-        cursor = await conn.cursor()
-        await cursor.execute(query, (id,))
-        rows = await cursor.fetchall()
-        await conn.commit()
-    return rows
-
-async def get_deactive_workouts(id: int) -> tuple:
-    query = '''
-        SELECT id, name FROM Workout_types
-        WHERE id_user = ? AND is_active = 0
-    '''
-    async with aiosqlite.connect("bot_gym_db.db") as conn:
-        cursor = await conn.cursor()
-        await cursor.execute(query, (id,))
-        rows = await cursor.fetchall()
-        await conn.commit()
-    return rows
-
-async def get_all_workouts(id: int) -> tuple:
+async def get_workouts(id: int, is_active = None) -> tuple:
     query = '''
         SELECT id, name FROM Workout_types
         WHERE id_user = ?
     '''
+    query_is_active = 'AND is_active = ?'
+
     async with aiosqlite.connect("bot_gym_db.db") as conn:
         cursor = await conn.cursor()
-        await cursor.execute(query, (id,))
+        if is_active == 'active':
+            await cursor.execute(query + query_is_active, (id, 1))
+        elif is_active == 'deactive':
+            await cursor.execute(query + query_is_active, (id, 0))
+        else:
+            await cursor.execute(query, (id,))
         rows = await cursor.fetchall()
-        await conn.commit()
     return rows
 
 async def deactive_workout(workout: str):
