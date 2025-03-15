@@ -34,18 +34,26 @@ async def check_db():
         'password': config.data_base.password,
     }
     conn = await aiomysql.connect(**config_db)
-    check_db_query = f"SHOW DATABASES LIKE '{config.data_base.name_db}'"
-    create_db_query = f"CREATE DATABASE {config.data_base.name_db}"
+    
+    # Параметризованный запрос для проверки существования базы данных
+    check_db_query = "SHOW DATABASES LIKE %s"
+    create_db_query = "CREATE DATABASE %s"
     
     async with conn.cursor() as cursor:
-        await cursor.execute(check_db_query)
+        # Используем параметр для имени базы данных
+        await cursor.execute(check_db_query, (config.data_base.name_db,))
         result = await cursor.fetchone()
+        
         if not result:
-            await cursor.execute(create_db_query)
+            # Создаем базу данных, если она не существует
+            await cursor.execute(create_db_query, (config.data_base.name_db,))
         else:
             return
     
+    # Выбираем созданную базу данных
     await conn.select_db(config.data_base.name_db)
+    
+    # Чтение SQL-скрипта для создания таблиц
     with open('create_tables_mysql.sql', 'r', encoding='utf-8') as file:
         sql_script = file.read()
     sql_commands = sql_script.split(';')
@@ -53,7 +61,10 @@ async def check_db():
     async with conn.cursor() as cursor:
         for command in sql_commands:
             if command.strip():
+                # Выполняем каждый SQL-запрос из скрипта
                 await cursor.execute(command)
+    
+    # Фиксируем изменения и закрываем соединение
     await conn.commit()
     conn.close()
 
