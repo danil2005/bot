@@ -38,7 +38,6 @@ async def check_name_workout(id: int, name: str) -> bool:
         cursor = await conn.cursor()
         await cursor.execute(query, (id, name))
         rows = await cursor.fetchall()
-        await conn.commit()
     return bool(rows)
 
 async def add_new_workout(id: int, name: str):
@@ -111,7 +110,6 @@ async def get_name_workout(id: int) -> str:
         cursor = await conn.cursor()
         await cursor.execute(query, (id,))
         rows = await cursor.fetchall()
-        await conn.commit()
     return rows[0][0]
 
 async def check_name_exercise(id: int, name: str) -> bool:
@@ -123,7 +121,6 @@ async def check_name_exercise(id: int, name: str) -> bool:
         cursor = await conn.cursor()
         await cursor.execute(query, (id, name))
         rows = await cursor.fetchall()
-        await conn.commit()
     return bool(rows)
 
 async def add_new_exercise(id: int, name: str):
@@ -149,7 +146,6 @@ async def get_name_exercise(id: int) -> str:
         cursor = await conn.cursor()
         await cursor.execute(query, (id,))
         rows = await cursor.fetchall()
-        await conn.commit()
     return rows[0][0]
 
 async def start_workout(id_user, id_type):
@@ -189,7 +185,6 @@ async def get_weight_workout(id):
         cursor = await conn.cursor()
         await cursor.execute(query, (id,))
         rows = await cursor.fetchall()
-        await conn.commit()
     return rows
 
 async def end_workout(workout_id: int):
