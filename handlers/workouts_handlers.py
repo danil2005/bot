@@ -161,7 +161,7 @@ async def process_back_delete_exercise(callback: CallbackQuery, state: FSMContex
 # Ввод названия упражнения
 @router.message(StateFilter(FSMFillForm.enter_name_exercise))
 async def process_enter_name_exercise(message: Message, state: FSMContext):
-    id_exercise_type = await database.add_new_exercise(message.chat.id, message.text)
+    id_exercise_type = await database.add_new_exercise_type(message.chat.id, message.text)
     await message.bot.delete_message(message.chat.id, message.message_id)
     await message.bot.delete_message(message.chat.id, message.message_id - 1)
     if id_exercise_type:

@@ -18,7 +18,7 @@ async def get_db_cursor():
         await cursor.close()
         conn.close()
 
-async def add_questionnaire_db(data: dict):
+async def add_questionnaire(data: dict):
     query = '''
         INSERT INTO Users
         VALUES (%s, %s, %s, %s, %s, %s)
@@ -68,7 +68,7 @@ async def check_db():
     await conn.commit()
     conn.close()
 
-async def check_name_workout(id: int, name: str) -> bool:
+async def check_name_workout_type(id: int, name: str) -> bool:
     query = '''
         SELECT * FROM Workout_types
         WHERE id_user = %s AND name = %s
@@ -78,8 +78,8 @@ async def check_name_workout(id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_workout(id: int, name: str):
-    if await check_name_workout(id, name):
+async def add_new_workout_type(id: int, name: str):
+    if await check_name_workout_type(id, name):
         return False
     query = '''
         INSERT INTO Workout_types (id_user, name, is_active)
@@ -146,7 +146,7 @@ async def check_name_exercise_type(id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_exercise(id: int, name: str):
+async def add_new_exercise_type(id: int, name: str):
     if await check_name_exercise_type(id, name):
         return False
     query = '''
@@ -283,7 +283,7 @@ async def update_exercise(id_exercise, weight):
         await cursor.execute(query_update_weight, (text_weight, id_exercise))
         await cursor.connection.commit()
 
-async def get_all_exercises(chat_id: int):
+async def get_all_exercise_types(chat_id: int):
     query = '''
         SELECT Exercise_types.id, Exercise_types.name
         FROM Exercise_types
@@ -304,7 +304,7 @@ async def get_info_workout(workout_id: int):
         row = await cursor.fetchone()
     return row
 
-async def get_history(exercise_type: int):
+async def get_exercise_history(exercise_type: int):
     query = '''
         SELECT Workout_types.name, Workouts.date, Workouts.start, Exercises.weight
         FROM Exercises
@@ -319,7 +319,7 @@ async def get_history(exercise_type: int):
     return rows
 
 async def delete_exercise(exercise: int):
-    exercise_del = await get_type_exercise(exercise)
+    exercise_del = await get_exercise_type(exercise)
     query = '''
         DELETE FROM Exercises
         WHERE id = %s
@@ -329,7 +329,7 @@ async def delete_exercise(exercise: int):
         await cursor.connection.commit()
     return exercise_del
 
-async def get_type_exercise(id_exercise: int):
+async def get_exercise_type(id_exercise: int):
     query = '''
         SELECT Exercises.id_type, Exercise_types.name
         FROM Exercises

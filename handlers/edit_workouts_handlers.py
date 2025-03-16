@@ -57,7 +57,7 @@ async def process_create_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.enter_name_workout))
 async def process_enter_name_workout(message: Message, state: FSMContext):
-    if await database.add_new_workout(message.chat.id, message.text):
+    if await database.add_new_workout_type(message.chat.id, message.text):
         data = await state.get_data()
         for i in range(data['message_id'], message.message_id + 1):
             await message.bot.delete_message(message.chat.id, i)

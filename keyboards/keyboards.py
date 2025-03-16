@@ -82,7 +82,7 @@ def inline_kb_do_exercise(id: int) -> InlineKeyboardMarkup:
 
 
 async def inline_kb_other_exercise(chat_id: int, type_workout: int):
-    exercises = await database.get_all_exercises(chat_id)
+    exercises = await database.get_all_exercise_types(chat_id)
     current_exercises = await database.get_workout_exercises(type_workout)
     current_exercises = [i[0] for i in current_exercises]
     exercises = [i for i in exercises if i[0] not in current_exercises]

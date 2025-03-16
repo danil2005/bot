@@ -121,7 +121,7 @@ async def workout_end_text(workout_id: int):
 
 
 async def history_exercise(id_type: int):
-    data = await database.get_history(id_type)
+    data = await database.get_exercise_history(id_type)
     res = ""
     for name, date, time, weights in data:
         res += f"{name}. {date} {time} - {weights}\n"
