@@ -94,7 +94,7 @@ async def weight_workout(id):
 
 
 async def workout_type_text(type_workout: int):
-    res = await database.get_name_workout(type_workout) + "\n\n"
+    res = await database.get_name_workout_type(type_workout) + "\n\n"
     # получаем id последних тренировок
     ids = await database.get_latest_workout_ids(type_workout)
     ids.reverse()
@@ -108,7 +108,7 @@ async def workout_type_text(type_workout: int):
 
 async def workout_end_text(workout_id: int):
     info = await database.get_info_workout(workout_id)
-    name = await database.get_name_workout(info[3])
+    name = await database.get_name_workout_type(info[3])
 
     # date_start = datetime.strptime(info[0], "%d-%m-%Y").date()
     # time_start = datetime.strptime(info[1], "%H:%M:%S").time()
