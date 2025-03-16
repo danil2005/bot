@@ -117,7 +117,7 @@ async def set_active_workout(workout: str, is_active: bool):
         await cursor.connection.commit()
 
 
-async def delete_workout(workout: str):
+async def delete_workout_types(workout: str):
     query = '''
         DELETE FROM Workout_types
         WHERE id = %s

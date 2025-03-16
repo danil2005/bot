@@ -81,7 +81,7 @@ async def set_active_workout(workout: str, is_active: bool):
         await cursor.execute(query, (is_active, int(workout)))
         await conn.commit()
 
-async def delete_workout(workout: str):
+async def delete_workout_types(workout: str):
     query = '''
         DELETE FROM Workout_types
         WHERE id = ?

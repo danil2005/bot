@@ -114,7 +114,7 @@ async def process_delete_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.delete), F.data.isdigit())
 async def process_delete_select(callback: CallbackQuery):
-    await database.delete_workout(callback.data)
+    await database.delete_workout_types(callback.data)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["delete"],
