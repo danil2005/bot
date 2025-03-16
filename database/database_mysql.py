@@ -68,13 +68,13 @@ async def check_db():
     await conn.commit()
     conn.close()
 
-async def check_name_workout_type(id: int, name: str) -> bool:
+async def check_name_workout_type(user_id: int, name: str) -> bool:
     query = '''
         SELECT * FROM Workout_types
-        WHERE id_user = %s AND name = %s
+        WHERE user_id = %s AND name = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id, name))
+        await cursor.execute(query, (user_id, name))
         rows = await cursor.fetchall()
     return bool(rows)
 
@@ -82,7 +82,7 @@ async def add_new_workout_type(id: int, name: str):
     if await check_name_workout_type(id, name):
         return False
     query = '''
-        INSERT INTO Workout_types (id_user, name, is_active)
+        INSERT INTO Workout_types (user_id, name, is_active)
         VALUES (%s, %s, %s)
     '''
     async with get_db_cursor() as cursor:
@@ -93,7 +93,7 @@ async def add_new_workout_type(id: int, name: str):
 async def get_workout_types(id: int, is_active = None) -> tuple:
     query = '''
         SELECT id, name FROM Workout_types
-        WHERE id_user = %s
+        WHERE user_id = %s
     '''
     query_is_active = 'AND is_active = %s'
 
@@ -139,7 +139,7 @@ async def get_name_workout_type(id: int) -> str:
 async def check_name_exercise_type(id: int, name: str) -> bool:
     query = '''
         SELECT * FROM Exercise_types
-        WHERE id_user = %s AND name = %s
+        WHERE user_id = %s AND name = %s
     '''
     async with get_db_cursor() as cursor:
         await cursor.execute(query, (id, name))
@@ -150,7 +150,7 @@ async def add_new_exercise_type(id: int, name: str):
     if await check_name_exercise_type(id, name):
         return False
     query = '''
-        INSERT INTO Exercise_types (id_user, name)
+        INSERT INTO Exercise_types (user_id, name)
         VALUES (%s, %s)
     '''
     async with get_db_cursor() as cursor:
@@ -163,7 +163,7 @@ async def start_workout(id_user, id_type):
     date = datetime.today().strftime("%Y-%m-%d")
     start = datetime.now().strftime("%H:%M:%S")
     query = '''
-        INSERT INTO Workouts (id_user, id_type, date, start)
+        INSERT INTO Workouts (user_id, id_type, date, start)
         VALUES (%s, %s, %s, %s)
     '''
     async with get_db_cursor() as cursor:
@@ -287,7 +287,7 @@ async def get_all_exercise_types(chat_id: int):
     query = '''
         SELECT Exercise_types.id, Exercise_types.name
         FROM Exercise_types
-        WHERE Exercise_types.id_user = %s
+        WHERE Exercise_types.user_id = %s
     '''
     async with get_db_cursor() as cursor:
         await cursor.execute(query, (chat_id,))

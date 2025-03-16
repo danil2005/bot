@@ -42,7 +42,7 @@ CREATE TABLE `exercises` (
 
 CREATE TABLE `exercise_types` (
   `id` int NOT NULL,
-  `id_user` int NOT NULL,
+  `user_id` int NOT NULL,
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -69,7 +69,7 @@ CREATE TABLE `users` (
 
 CREATE TABLE `workouts` (
   `id` int NOT NULL,
-  `id_user` int NOT NULL,
+  `user_id` int NOT NULL,
   `id_type` int NOT NULL,
   `date` date NOT NULL,
   `start` time NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE `workouts` (
 
 CREATE TABLE `workout_types` (
   `id` int NOT NULL,
-  `id_user` int NOT NULL,
+  `user_id` int NOT NULL,
   `name` varchar(255) NOT NULL,
   `is_active` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -107,7 +107,7 @@ ALTER TABLE `exercises`
 --
 ALTER TABLE `exercise_types`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_user` (`id_user`);
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `users`
@@ -121,14 +121,14 @@ ALTER TABLE `users`
 ALTER TABLE `workouts`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_type` (`id_type`),
-  ADD KEY `id_user` (`id_user`);
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `workout_types`
 --
 ALTER TABLE `workout_types`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_user` (`id_user`);
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -173,20 +173,20 @@ ALTER TABLE `exercises`
 -- Ограничения внешнего ключа таблицы `exercise_types`
 --
 ALTER TABLE `exercise_types`
-  ADD CONSTRAINT `exercise_types_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`chat_id`);
+  ADD CONSTRAINT `exercise_types_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `workouts`
 --
 ALTER TABLE `workouts`
   ADD CONSTRAINT `workouts_ibfk_1` FOREIGN KEY (`id_type`) REFERENCES `workout_types` (`id`),
-  ADD CONSTRAINT `workouts_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`chat_id`);
+  ADD CONSTRAINT `workouts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `workout_types`
 --
 ALTER TABLE `workout_types`
-  ADD CONSTRAINT `workout_types_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`chat_id`);
+  ADD CONSTRAINT `workout_types_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
