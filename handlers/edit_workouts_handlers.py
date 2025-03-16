@@ -83,7 +83,7 @@ async def process_archive_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.archive), F.data.isdigit())
 async def process_archive_select(callback: CallbackQuery):
-    await database.deactive_workout(callback.data)
+    await database.set_active_workout(callback.data, False)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["select_archive"],
@@ -145,7 +145,7 @@ async def process_dearchive_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.dearchive), F.data.isdigit())
 async def process_dearchive_select(callback: CallbackQuery):
-    await database.active_workout(callback.data)
+    await database.set_active_workout(callback.data, True)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["dearchive"],

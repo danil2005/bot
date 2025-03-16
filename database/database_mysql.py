@@ -107,23 +107,15 @@ async def get_workouts(id: int, is_active = None) -> tuple:
         rows = await cursor.fetchall()
     return rows
 
-async def deactive_workout(workout: str):
+async def set_active_workout(workout: str, is_active: bool):
     query = '''
-        UPDATE Workout_types SET is_active = 0
+        UPDATE Workout_types SET is_active = %s
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (int(workout),))
+        await cursor.execute(query, (is_active, int(workout)))
         await cursor.connection.commit()
 
-async def active_workout(workout: str):
-    query = '''
-        UPDATE Workout_types SET is_active = 1
-        WHERE id = %s
-    '''
-    async with get_db_cursor() as cursor:
-        await cursor.execute(query, (int(workout),))
-        await cursor.connection.commit()
 
 async def delete_workout(workout: str):
     query = '''
