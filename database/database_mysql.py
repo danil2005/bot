@@ -136,7 +136,7 @@ async def get_name_workout_type(id: int) -> str:
         rows = await cursor.fetchall()
     return rows[0][0]
 
-async def check_name_exercise(id: int, name: str) -> bool:
+async def check_name_exercise_type(id: int, name: str) -> bool:
     query = '''
         SELECT * FROM Exercise_types
         WHERE id_user = %s AND name = %s
@@ -147,7 +147,7 @@ async def check_name_exercise(id: int, name: str) -> bool:
     return bool(rows)
 
 async def add_new_exercise(id: int, name: str):
-    if await check_name_exercise(id, name):
+    if await check_name_exercise_type(id, name):
         return False
     query = '''
         INSERT INTO Exercise_types (id_user, name)
@@ -158,16 +158,6 @@ async def add_new_exercise(id: int, name: str):
         last_id = cursor.lastrowid
         await cursor.connection.commit()
     return last_id
-
-async def get_name_exercise(id: int) -> str:
-    query = '''
-        SELECT name FROM Exercise_types
-        WHERE id = %s
-    '''
-    async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id,))
-        rows = await cursor.fetchall()
-    return rows[0][0]
 
 async def start_workout(id_user, id_type):
     date = datetime.today().strftime("%Y-%m-%d")
