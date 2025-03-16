@@ -90,7 +90,7 @@ async def add_new_workout(id: int, name: str):
         await cursor.connection.commit()
     return True
 
-async def get_workouts(id: int, is_active = None) -> tuple:
+async def get_workout_types(id: int, is_active = None) -> tuple:
     query = '''
         SELECT id, name FROM Workout_types
         WHERE id_user = %s
