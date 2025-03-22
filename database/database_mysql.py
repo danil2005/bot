@@ -67,19 +67,19 @@ async def check_name_workout_type(user_id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_workout_type(id: int, name: str):
-    if await check_name_workout_type(id, name):
+async def add_new_workout_type(user_id: int, name: str):
+    if await check_name_workout_type(user_id, name):
         return False
     query = '''
         INSERT INTO Workout_types (user_id, name, is_active)
         VALUES (%s, %s, %s)
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id, name, True))
+        await cursor.execute(query, (user_id, name, True))
         await cursor.connection.commit()
     return True
 
-async def get_workout_types(id: int, is_active = None) -> tuple:
+async def get_workout_types(user_id: int, is_active = None) -> tuple:
     query = '''
         SELECT id, name FROM Workout_types
         WHERE user_id = %s
@@ -88,82 +88,81 @@ async def get_workout_types(id: int, is_active = None) -> tuple:
 
     async with get_db_cursor() as cursor:
         if is_active == 'active':
-            await cursor.execute(query + query_is_active, (id, 1))
+            await cursor.execute(query + query_is_active, (user_id, 1))
         elif is_active == 'deactive':
-            await cursor.execute(query + query_is_active, (id, 0))
+            await cursor.execute(query + query_is_active, (user_id, 0))
         else:
-            await cursor.execute(query, (id,))
+            await cursor.execute(query, (user_id,))
         rows = await cursor.fetchall()
     return rows
 
-async def set_active_workout_type(workout: str, is_active: bool):
+async def set_active_workout_type(workout_type: str, is_active: bool):
     query = '''
         UPDATE Workout_types SET is_active = %s
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (is_active, int(workout)))
+        await cursor.execute(query, (is_active, int(workout_type)))
         await cursor.connection.commit()
 
-
-async def delete_workout_type(workout: str):
+async def delete_workout_type(workout_type: str):
     query = '''
         DELETE FROM Workout_types
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (int(workout),))
+        await cursor.execute(query, (int(workout_type),))
         await cursor.connection.commit()
 
-async def get_name_workout_type(id: int) -> str:
+async def get_name_workout_type(workout_type: int) -> str:
     query = '''
         SELECT name FROM Workout_types
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id,))
+        await cursor.execute(query, (workout_type,))
         rows = await cursor.fetchall()
     return rows[0][0]
 
-async def check_name_exercise_type(id: int, name: str) -> bool:
+async def check_name_exercise_type(user_id: int, name: str) -> bool:
     query = '''
         SELECT * FROM Exercise_types
         WHERE user_id = %s AND name = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id, name))
+        await cursor.execute(query, (user_id, name))
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_exercise_type(id: int, name: str):
-    if await check_name_exercise_type(id, name):
+async def add_new_exercise_type(user_id: int, name: str):
+    if await check_name_exercise_type(user_id, name):
         return False
     query = '''
         INSERT INTO Exercise_types (user_id, name)
         VALUES (%s, %s)
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id, name))
+        await cursor.execute(query, (user_id, name))
         last_id = cursor.lastrowid
         await cursor.connection.commit()
     return last_id
 
-async def start_workout(id_user, id_type):
+async def start_workout(user_id, workout_type):
     date = datetime.today().strftime("%Y-%m-%d")
     start = datetime.now().strftime("%H:%M:%S")
     query = '''
-        INSERT INTO Workouts (user_id, id_type, date, start)
+        INSERT INTO Workouts (user_id, type_id, date, start)
         VALUES (%s, %s, %s, %s)
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id_user, id_type, date, start))
+        await cursor.execute(query, (user_id, workout_type, date, start))
         last_id = cursor.lastrowid
         await cursor.connection.commit()
     return last_id
 
 async def start_exercise(exercise_type, workout):
     query = '''
-        INSERT INTO Exercises (id_type, id_workout, weight)
+        INSERT INTO Exercises (type_id, id_workout, weight)
         VALUES (%s, %s, "")
     '''
     async with get_db_cursor() as cursor:
@@ -172,20 +171,20 @@ async def start_exercise(exercise_type, workout):
         await cursor.connection.commit()
     return last_id
 
-async def get_weight_workout(id):
+async def get_weight_workout(workout):
     query = '''
         SELECT Exercise_types.name, Exercises.weight, Exercises.id
         FROM Exercises
-        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
+        INNER JOIN Exercise_types ON Exercises.type_id = Exercise_types.id
         WHERE Exercises.id_workout = %s
         ORDER BY Exercises.id ASC
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id,))
+        await cursor.execute(query, (workout,))
         rows = await cursor.fetchall()
     return rows
 
-async def end_workout(workout_id: int):
+async def end_workout(workout: int):
     query_get_workout = '''
         SELECT date, start FROM Workouts
         WHERE id = %s
@@ -195,28 +194,28 @@ async def end_workout(workout_id: int):
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query_get_workout, (workout_id,))
+        await cursor.execute(query_get_workout, (workout,))
         rows = await cursor.fetchall()
     start = datetime.combine(rows[0][0], datetime.min.time()) + rows[0][1]
     end = datetime.now()
     duration = (end - start).total_seconds() // 60
     end_str = end.strftime("%H:%M:%S")
     async with get_db_cursor() as cursor:
-        await cursor.execute(query_update_workout, (end_str, duration, workout_id))
+        await cursor.execute(query_update_workout, (end_str, duration, workout))
         await cursor.connection.commit()
 
 async def get_workout_exercises(type_workout: int):
     query_get_latest_workout = '''
         SELECT id
         FROM Workouts
-        WHERE id_type = %s AND end IS NOT NULL
+        WHERE type_id = %s AND end IS NOT NULL
         ORDER BY id DESC
         LIMIT 1
     '''
     query_get_exercises = '''
-        SELECT Exercises.id_type, Exercise_types.name
+        SELECT Exercises.type_id, Exercise_types.name
         FROM Exercises
-        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
+        INNER JOIN Exercise_types ON Exercises.type_id = Exercise_types.id
         WHERE Exercises.id_workout = %s
     '''
     async with get_db_cursor() as cursor:
@@ -234,7 +233,7 @@ async def get_latest_workout_ids(type_workout: int):
     query = '''
         SELECT id
         FROM Workouts
-        WHERE id_type = %s
+        WHERE type_id = %s
         ORDER BY id DESC
         LIMIT 3
     '''
@@ -243,17 +242,17 @@ async def get_latest_workout_ids(type_workout: int):
         rows = await cursor.fetchall()
     return [row[0] for row in rows]
 
-async def get_date_workout(workout_id: int):
+async def get_date_workout(workout: int):
     query = '''
         SELECT date FROM Workouts
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (workout_id,))
+        await cursor.execute(query, (workout,))
         rows = await cursor.fetchall()
     return rows[0][0].strftime("%d-%m-%Y")
 
-async def update_exercise(id_exercise, weight):
+async def update_exercise(exercise, weight):
     query_get_weight = '''
         SELECT weight FROM Exercises
         WHERE id = %s
@@ -263,13 +262,13 @@ async def update_exercise(id_exercise, weight):
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query_get_weight, (id_exercise,))
+        await cursor.execute(query_get_weight, (exercise,))
         rows = await cursor.fetchall()
     old_weight = rows[0][0].split(' | ') if rows[0][0] else []
     old_weight.append(weight)
     text_weight = ' | '.join(old_weight)
     async with get_db_cursor() as cursor:
-        await cursor.execute(query_update_weight, (text_weight, id_exercise))
+        await cursor.execute(query_update_weight, (text_weight, exercise))
         await cursor.connection.commit()
 
 async def get_all_exercise_types(chat_id: int):
@@ -283,13 +282,13 @@ async def get_all_exercise_types(chat_id: int):
         rows = await cursor.fetchall()
     return [(str(row[0]), row[1]) for row in rows]
 
-async def get_info_workout(workout_id: int):
+async def get_info_workout(workout: int):
     query = '''
-        SELECT date, start, duration, id_type FROM Workouts
+        SELECT date, start, duration, type_id FROM Workouts
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (workout_id,))
+        await cursor.execute(query, (workout,))
         row = await cursor.fetchone()
     return row
 
@@ -298,8 +297,8 @@ async def get_exercise_history(exercise_type: int):
         SELECT Workout_types.name, Workouts.date, Workouts.start, Exercises.weight
         FROM Exercises
         JOIN Workouts ON Exercises.id_workout = Workouts.id
-        JOIN Workout_types ON Workouts.id_type = Workout_types.id
-        WHERE Exercises.id_type = %s
+        JOIN Workout_types ON Workouts.type_id = Workout_types.id
+        WHERE Exercises.type_id = %s
         LIMIT 5
     '''
     async with get_db_cursor() as cursor:
@@ -318,14 +317,14 @@ async def delete_exercise(exercise: int):
         await cursor.connection.commit()
     return exercise_del
 
-async def get_exercise_type(id_exercise: int):
+async def get_exercise_type(exercise: int):
     query = '''
-        SELECT Exercises.id_type, Exercise_types.name
+        SELECT Exercises.type_id, Exercise_types.name
         FROM Exercises
-        INNER JOIN Exercise_types ON Exercises.id_type = Exercise_types.id
+        INNER JOIN Exercise_types ON Exercises.type_id = Exercise_types.id
         WHERE Exercises.id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (id_exercise,))
+        await cursor.execute(query, (exercise,))
         row = await cursor.fetchone()
     return row

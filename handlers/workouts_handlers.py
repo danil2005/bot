@@ -133,6 +133,7 @@ async def process_delete_exercise(callback: CallbackQuery, state: FSMContext):
     )
     await state.set_state(FSMFillForm.delete_exercise)
 
+#выбор упражнения для удаления
 @router.callback_query(StateFilter(FSMFillForm.delete_exercise), F.data.isdigit())
 async def process_select_exercise_for_del(callback: CallbackQuery, state: FSMContext):
     exerecise_del = await database.delete_exercise(callback.data)
@@ -166,6 +167,7 @@ async def process_enter_name_exercise(message: Message, state: FSMContext):
     await message.bot.delete_message(message.chat.id, message.message_id - 1)
     if id_exercise_type:
         data = await state.get_data()
+        data["completed_exercises"].append(str(id_exercise_type))
         id_exercise = await database.start_exercise(id_exercise_type, data["workout"])
         await message.bot.edit_message_text(
             chat_id=message.chat.id,
@@ -175,7 +177,7 @@ async def process_enter_name_exercise(message: Message, state: FSMContext):
         )
         await state.set_state(FSMFillForm.do_exercise)
         await state.update_data(
-            exercise_type=int(id_exercise_type), exercise=id_exercise
+            exercise_type=int(id_exercise_type), exercise=id_exercise, completed_exercises=data["completed_exercises"]
         )
     else:
         await message.answer(LEXICON["repeat_name_exercise"])

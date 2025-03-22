@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `exercises` (
   `id` int NOT NULL,
-  `id_type` int NOT NULL,
+  `type_id` int NOT NULL,
   `weight` varchar(255) NOT NULL,
   `id_workout` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -70,7 +70,7 @@ CREATE TABLE `users` (
 CREATE TABLE `workouts` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `id_type` int NOT NULL,
+  `type_id` int NOT NULL,
   `date` date NOT NULL,
   `start` time NOT NULL,
   `end` time DEFAULT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE `workout_types` (
 --
 ALTER TABLE `exercises`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_type` (`id_type`),
+  ADD KEY `type_id` (`type_id`),
   ADD KEY `id_workout` (`id_workout`);
 
 --
@@ -120,7 +120,7 @@ ALTER TABLE `users`
 --
 ALTER TABLE `workouts`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_type` (`id_type`),
+  ADD KEY `type_id` (`type_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
@@ -166,7 +166,7 @@ ALTER TABLE `workout_types`
 -- Ограничения внешнего ключа таблицы `exercises`
 --
 ALTER TABLE `exercises`
-  ADD CONSTRAINT `exercises_ibfk_1` FOREIGN KEY (`id_type`) REFERENCES `exercise_types` (`id`),
+  ADD CONSTRAINT `exercises_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `exercise_types` (`id`),
   ADD CONSTRAINT `exercises_ibfk_2` FOREIGN KEY (`id_workout`) REFERENCES `workouts` (`id`) ON DELETE CASCADE;
 
 --
@@ -179,7 +179,7 @@ ALTER TABLE `exercise_types`
 -- Ограничения внешнего ключа таблицы `workouts`
 --
 ALTER TABLE `workouts`
-  ADD CONSTRAINT `workouts_ibfk_1` FOREIGN KEY (`id_type`) REFERENCES `workout_types` (`id`),
+  ADD CONSTRAINT `workouts_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `workout_types` (`id`),
   ADD CONSTRAINT `workouts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
 
 --
