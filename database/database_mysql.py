@@ -204,7 +204,7 @@ async def end_workout(workout: int):
         await cursor.execute(query_update_workout, (end_str, duration, workout))
         await cursor.connection.commit()
 
-async def get_workout_exercises(type_workout: int):
+async def get_workout_exercises(workout_type: int):
     query_get_latest_workout = '''
         SELECT id
         FROM Workouts
@@ -219,7 +219,7 @@ async def get_workout_exercises(type_workout: int):
         WHERE Exercises.id_workout = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query_get_latest_workout, (type_workout,))
+        await cursor.execute(query_get_latest_workout, (workout_type,))
         rows = await cursor.fetchall()
     if not rows:
         return []
@@ -229,7 +229,7 @@ async def get_workout_exercises(type_workout: int):
         rows = await cursor.fetchall()
     return [(str(row[0]), row[1]) for row in rows]
 
-async def get_latest_workout_ids(type_workout: int):
+async def get_latest_workout_ids(workout_type: int):
     query = '''
         SELECT id
         FROM Workouts
@@ -238,7 +238,7 @@ async def get_latest_workout_ids(type_workout: int):
         LIMIT 3
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (type_workout,))
+        await cursor.execute(query, (workout_type,))
         rows = await cursor.fetchall()
     return [row[0] for row in rows]
 

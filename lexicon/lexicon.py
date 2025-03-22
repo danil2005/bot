@@ -1,5 +1,4 @@
 from database import database
-from datetime import datetime
 
 LEXICON: dict[str, str] = {
     "/start": "Привет! Этот бот поможет вести статистику тренировок.\n"
@@ -59,7 +58,6 @@ EDIT_WORKOUTS: dict[str, str] = {
 
 WORKOUT_MENU: dict[str, str] = {
     "start": "▶️ Старт ▶️",
-    # 'watch': '👀 Просмотр 👀',
     "main_menu": "🏠 Главное меню 🏠",
 }
 

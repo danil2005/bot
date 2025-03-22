@@ -191,7 +191,7 @@ async def end_workout(workout: int):
         await cursor.execute(query_update, (end_str, duration, workout))
         await conn.commit()
 
-async def get_workout_exercises(type_workout: int):
+async def get_workout_exercises(workout_type: int):
     query_last_workout = '''
         SELECT id
         FROM Workouts
@@ -201,7 +201,7 @@ async def get_workout_exercises(type_workout: int):
     '''
     async with aiosqlite.connect("bot_gym_db.db") as conn:
         cursor = await conn.cursor()
-        await cursor.execute(query_last_workout, (type_workout,))
+        await cursor.execute(query_last_workout, (workout_type,))
         rows = await cursor.fetchall()
 
     if not rows:
@@ -222,7 +222,7 @@ async def get_workout_exercises(type_workout: int):
     result = [(str(i), j) for i, j in rows]
     return result
 
-async def get_latest_workout_ids(type_workout: int):
+async def get_latest_workout_ids(workout_type: int):
     query = '''
         SELECT id
         FROM Workouts
@@ -232,7 +232,7 @@ async def get_latest_workout_ids(type_workout: int):
     '''
     async with aiosqlite.connect("bot_gym_db.db") as conn:
         cursor = await conn.cursor()
-        await cursor.execute(query, (type_workout, 3))
+        await cursor.execute(query, (workout_type, 3))
         rows = await cursor.fetchall()
     return [i[0] for i in rows]
 

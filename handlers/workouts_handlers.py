@@ -20,7 +20,7 @@ async def process_menu_workout(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=await lexicon.workout_type_text(callback.data),
-        reply_markup=keyboards.inline_kb_menu_workouts(callback.message.chat.id),
+        reply_markup=keyboards.inline_kb_menu_workouts(),
     )
     await state.set_state(FSMFillForm.menu_workout)
 
@@ -62,7 +62,7 @@ async def process_select_exercise(callback: CallbackQuery, state: FSMContext):
     id_exercise = await database.start_exercise(callback.data, data["workout"])
     await callback.message.edit_text(
         text=await lexicon.workout_type_text(data["workout_type"]),
-        reply_markup=keyboards.inline_kb_do_exercise(callback.message.chat.id),
+        reply_markup=keyboards.inline_kb_do_exercise(),
     )
     await state.set_state(FSMFillForm.do_exercise)
     data["completed_exercises"].append(callback.data)
@@ -173,7 +173,7 @@ async def process_enter_name_exercise(message: Message, state: FSMContext):
             chat_id=message.chat.id,
             message_id=data["message_id"],
             text=await lexicon.workout_type_text(data["workout_type"]),
-            reply_markup=keyboards.inline_kb_do_exercise(message.chat.id),
+            reply_markup=keyboards.inline_kb_do_exercise(),
         )
         await state.set_state(FSMFillForm.do_exercise)
         await state.update_data(
@@ -193,7 +193,7 @@ async def process_do_exercise(message: Message, state: FSMContext):
         chat_id=message.chat.id,
         message_id=data["message_id"],
         text=await lexicon.workout_type_text(data["workout_type"]),
-        reply_markup=keyboards.inline_kb_do_exercise(message.chat.id),
+        reply_markup=keyboards.inline_kb_do_exercise(),
     )
 
 
@@ -230,6 +230,6 @@ async def process_back_history_exercise(callback: CallbackQuery, state: FSMConte
     data = await state.get_data()
     await callback.message.edit_text(
         text=await lexicon.workout_type_text(data["workout_type"]),
-        reply_markup=keyboards.inline_kb_do_exercise(callback.message.chat.id),
+        reply_markup=keyboards.inline_kb_do_exercise(),
     )
     await state.set_state(FSMFillForm.do_exercise)
