@@ -31,26 +31,26 @@ LEXICON: dict[str, str] = {
     "delete_exercise": "Выберите упражнение для удаления"
 }
 
-LEXICON_COMMANDS: dict[str, str] = {
+COMMANDS: dict[str, str] = {
     "/start": "🚀 Старт 🚀",
     "/help": "📖 Справка по работе бота 📖",
 }
 
-LEXICON_BUTTON: dict[str, str] = {
+BUTTON: dict[str, str] = {
     "yes": "✅ ДА ✅",
     "no": "❌ НЕТ ❌",
     "male": "👨 Мужской 👨",
     "female": "👩 Женский 👩",
 }
 
-LEXICON_MAIN_MENU: dict[str, str] = {
+MAIN_MENU: dict[str, str] = {
     "edit_workouts": "⚙️ Редактировать тренировки ⚙️",
     # 'fix_weight': '⚖️ Зафиксировать вес ⚖️'
 }
 
-LEXICON_EDIT_ACTION: dict[str, str] = {"ready": "✔️ Готово ✔️"}
+EDIT_ACTION: dict[str, str] = {"ready": "✔️ Готово ✔️"}
 
-LEXICON_EDIT_WORKOUTS: dict[str, str] = {
+EDIT_WORKOUTS: dict[str, str] = {
     "create_workout": "➕ Создать ➕",
     "archive": "📥 Архивировать 📥",
     "delete": "🗑️ Удалить 🗑️",
@@ -126,3 +126,14 @@ async def history_exercise(id_type: int):
     for name, date, time, weights in data:
         res += f"{name}. {date} {time} - {weights}\n"
     return res
+
+def create_questionnaire_text(data: dict) -> str:
+    return (
+        "Вот ваша анкета:\n\n"
+        f"Имя - {data['name']}\n"
+        f"Возраст - {data['old']}\n"
+        f"Пол - {data['gender']}\n"
+        f"Рост - {data['height']}\n"
+        f"Вес - {data['weight']}\n"
+        "\nВсе верно?"
+    )

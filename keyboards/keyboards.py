@@ -1,4 +1,3 @@
-from lexicon import lexicon
 from aiogram.types import (
     KeyboardButton,
     ReplyKeyboardMarkup,
@@ -7,7 +6,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database import database
-
+from lexicon import lexicon
 
 def create_keyboard(*names: str):
     buttons = [KeyboardButton(text=i) for i in names]
@@ -17,10 +16,10 @@ def create_keyboard(*names: str):
 
 
 keyboard_no_yes = create_keyboard(
-    lexicon.LEXICON_BUTTON["yes"], lexicon.LEXICON_BUTTON["no"]
+    lexicon.BUTTON["yes"], lexicon.BUTTON["no"]
 )
 keyboard_gender = create_keyboard(
-    lexicon.LEXICON_BUTTON["male"], lexicon.LEXICON_BUTTON["female"]
+    lexicon.BUTTON["male"], lexicon.BUTTON["female"]
 )
 
 
@@ -34,31 +33,31 @@ def create_inline_keyboard(data):
 async def inline_kb_main_menu(id: int) -> InlineKeyboardMarkup:
     workouts = await database.get_workout_types(id, 'active')
     workouts = [(str(i), j) for i, j in workouts]
-    data = workouts + list(lexicon.LEXICON_MAIN_MENU.items())
+    data = workouts + list(lexicon.MAIN_MENU.items())
     return create_inline_keyboard(data)
 
 
-inline_kb_edit_workouts = create_inline_keyboard(lexicon.LEXICON_EDIT_WORKOUTS.items())
+inline_kb_edit_workouts = create_inline_keyboard(lexicon.EDIT_WORKOUTS.items())
 
 
 async def inline_kb_archive_workouts(id: int) -> InlineKeyboardMarkup:
     workouts = await database.get_workout_types(id, 'active')
     workouts = [(str(i), j) for i, j in workouts]
-    data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
+    data = workouts + list(lexicon.EDIT_ACTION.items())
     return create_inline_keyboard(data)
 
 
 async def inline_kb_delete_workouts(id: int) -> InlineKeyboardMarkup:
     workouts = await database.get_workout_types(id)
     workouts = [(str(i), j) for i, j in workouts]
-    data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
+    data = workouts + list(lexicon.EDIT_ACTION.items())
     return create_inline_keyboard(data)
 
 
 async def inline_kb_dearchive_workouts(id: int) -> InlineKeyboardMarkup:
     workouts = await database.get_workout_types(id, 'deactive')
     workouts = [(str(i), j) for i, j in workouts]
-    data = workouts + list(lexicon.LEXICON_EDIT_ACTION.items())
+    data = workouts + list(lexicon.EDIT_ACTION.items())
     return create_inline_keyboard(data)
 
 

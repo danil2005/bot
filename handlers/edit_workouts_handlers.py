@@ -4,7 +4,8 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from filters.fsm import FSMFillForm
 
-from lexicon.lexicon import LEXICON, LEXICON_MAIN_MENU
+from lexicon import lexicon
+from lexicon.lexicon import LEXICON
 from keyboards import keyboards
 from database import database
 
@@ -26,7 +27,7 @@ async def process_start_command(message: Message, state: FSMContext):
 async def process_edite_workouts(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
-        text=LEXICON_MAIN_MENU["edit_workouts"],
+        text=lexicon.MAIN_MENU["edit_workouts"],
         reply_markup=keyboards.inline_kb_edit_workouts,
     )
     await state.set_state(FSMFillForm.edite_workouts)
