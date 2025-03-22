@@ -45,7 +45,6 @@ BUTTON: dict[str, str] = {
 
 MAIN_MENU: dict[str, str] = {
     "edit_workouts": "⚙️ Редактировать тренировки ⚙️",
-    # 'fix_weight': '⚖️ Зафиксировать вес ⚖️'
 }
 
 EDIT_ACTION: dict[str, str] = {"ready": "✔️ Готово ✔️"}
@@ -88,15 +87,15 @@ DELETE_EXERCISE: dict[str, str] = {
     "back": "↩️ Назад ↩️",
 }
 
-async def weight_workout(id):
-    data = await database.get_weight_workout(id)
+async def weight_workout(workout):
+    data = await database.get_weight_workout(workout)
     return "\n".join([f"{i}: {j}" for i, j, _ in data])
 
 
-async def workout_type_text(type_workout: int):
-    res = await database.get_name_workout_type(type_workout) + "\n\n"
+async def workout_type_text(workout_type: int):
+    res = await database.get_name_workout_type(workout_type) + "\n\n"
     # получаем id последних тренировок
-    ids = await database.get_latest_workout_ids(type_workout)
+    ids = await database.get_latest_workout_ids(workout_type)
     ids.reverse()
     for i in ids:
         date = await database.get_date_workout(i)
@@ -106,22 +105,17 @@ async def workout_type_text(type_workout: int):
     return res
 
 
-async def workout_end_text(workout_id: int):
-    info = await database.get_info_workout(workout_id)
+async def workout_end_text(workout: int):
+    info = await database.get_info_workout(workout)
     name = await database.get_name_workout_type(info[3])
 
-    # date_start = datetime.strptime(info[0], "%d-%m-%Y").date()
-    # time_start = datetime.strptime(info[1], "%H:%M:%S").time()
-    # start = datetime.combine(date_start, time_start)
-    # start_text = start.strftime("%d.%m.%y %H:%M")
-
-    res = f"{name}\nПродолжительность - {info[2]} мин\n\n" + await weight_workout(workout_id)
+    res = f"{name}\nПродолжительность - {info[2]} мин\n\n" + await weight_workout(workout)
 
     return res
 
 
-async def history_exercise(id_type: int):
-    data = await database.get_exercise_history(id_type)
+async def history_exercise(exercise_type: int):
+    data = await database.get_exercise_history(exercise_type)
     res = ""
     for name, date, time, weights in data:
         res += f"{name}. {date} {time} - {weights}\n"
