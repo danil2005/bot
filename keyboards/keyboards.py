@@ -14,6 +14,8 @@ def create_keyboard(*names: str):
         keyboard=[buttons], resize_keyboard=True, one_time_keyboard=True
     )
 
+from aiogram import Bot
+from aiogram.types import BotCommand
 
 keyboard_no_yes = create_keyboard(
     lexicon.BUTTON["yes"], lexicon.BUTTON["no"]
@@ -97,3 +99,10 @@ async def inline_kb_delete_exercise (workout: int):
     data = [(str(k), f"{i}: {j}") for i, j, k in exercises]
     return create_inline_keyboard(data + list(lexicon.DELETE_EXERCISE.items()))
 
+# Функция для настройки кнопки Menu бота
+async def set_main_menu(bot: Bot):
+    main_menu_commands = [
+        BotCommand(command=command, description=description)
+        for command, description in lexicon.COMMANDS.items()
+    ]
+    await bot.set_my_commands(main_menu_commands)
