@@ -9,7 +9,7 @@ from handlers import (
     workouts_handlers,
     edit_workouts_handlers,
 )
-from keyboards.main_menu import set_main_menu
+from keyboards.keyboards import set_main_menu
 
 from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis

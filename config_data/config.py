@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-
-from environs import Env
+from dotenv import load_dotenv
+import os
 
 
 @dataclass
@@ -23,21 +23,29 @@ class Config:
     data_base: DataBase
 
 
-# Создаем функцию, которая будет читать файл .env и возвращать
-# экземпляр класса Config с заполненными полями token и admin_ids
 def load_config(path: str | None = None) -> Config:
-    env = Env()
-    env.read_env(path)
-    return Config(
-        tg_bot=TgBot(token=env("BOT_TOKEN")),
-        data_base=DataBase(
-            host=env("HOST_DB"),
-            user=env("USER_DB"),
-            password=env("PASSWORD_DB"),
-            name_db=env("NAME_DB"),
-        ),
-        type_db=env("TYPE_DB"),
-    )
+
+    load_dotenv(dotenv_path=path)
+
+    type_db = type_db=os.getenv("TYPE_DB")
+
+    if type_db == "mysql":
+        return Config(
+            tg_bot=TgBot(token=os.getenv("BOT_TOKEN")),
+            data_base=DataBase(
+                host=os.getenv("HOST_DB"),
+                user=os.getenv("USER_DB"),
+                password=os.getenv("PASSWORD_DB"),
+                name_db=os.getenv("NAME_DB"),
+            ),
+            type_db=type_db,
+        )
+    elif type_db == "sqllite":
+         return Config(
+            tg_bot=TgBot(token=os.getenv("BOT_TOKEN")),
+            type_db=type_db,
+        )
+
 
 
 config: Config = load_config()
