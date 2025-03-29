@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from config_data.config import config
 
-async def check_db():
+async def check_db() -> None:
     if not os.path.exists("bot_gym_db.db"):
         # Если файл не существует, создаем новую базу данных
         open("bot_gym_db.db", 'w').close()
@@ -19,7 +19,7 @@ async def check_db():
                 await cursor.execute(command)
         await conn.commit()
 
-async def add_questionnaire(data: dict):
+async def add_questionnaire(data: dict) -> None:
     query = '''
         INSERT INTO Users
         VALUES (?,?,?,?,?,?)
@@ -40,7 +40,7 @@ async def check_name_workout_type(user_id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_workout_type(user_id: int, name: str):
+async def add_new_workout_type(user_id: int, name: str) -> None:
     if await check_name_workout_type(user_id, name):
         return False
     query = '''
@@ -53,7 +53,7 @@ async def add_new_workout_type(user_id: int, name: str):
         await conn.commit()
     return True
 
-async def get_workout_types(user_id: int, is_active = None) -> tuple:
+async def get_workout_types(user_id: int, is_active = None) -> list[tuple]:
     query = '''
         SELECT id, name FROM Workout_types
         WHERE user_id = ?
@@ -71,7 +71,7 @@ async def get_workout_types(user_id: int, is_active = None) -> tuple:
         rows = await cursor.fetchall()
     return rows
 
-async def set_active_workout_type(workout_type: str, is_active: bool):
+async def set_active_workout_type(workout_type: str, is_active: bool)-> None:
     query = '''
         UPDATE Workout_types SET is_active = ?
         WHERE id = ?
@@ -81,7 +81,7 @@ async def set_active_workout_type(workout_type: str, is_active: bool):
         await cursor.execute(query, (is_active, int(workout_type)))
         await conn.commit()
 
-async def delete_workout_type(workout_type: str):
+async def delete_workout_type(workout_type: str) -> None:
     query = '''
         DELETE FROM Workout_types
         WHERE id = ?
@@ -91,7 +91,7 @@ async def delete_workout_type(workout_type: str):
         await cursor.execute(query, (int(workout_type),))
         await conn.commit()
 
-async def get_name_workout_type(workout_type: int) -> str:
+async def get_name_workout_type(workout_type: str) -> str:
     query = '''
         SELECT name FROM Workout_types
         WHERE id = ?
@@ -113,7 +113,7 @@ async def check_name_exercise_type(user_id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_exercise_type(user_id: int, name: str):
+async def add_new_exercise_type(user_id: int, name: str) -> int:
     if await check_name_exercise_type(user_id, name):
         return False
     query = '''

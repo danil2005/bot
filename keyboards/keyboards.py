@@ -8,7 +8,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database import database
 from lexicon import lexicon
 
-def create_keyboard(*names: str):
+def create_keyboard(*names: str) -> ReplyKeyboardMarkup:
     buttons = [KeyboardButton(text=i) for i in names]
     return ReplyKeyboardMarkup(
         keyboard=[buttons], resize_keyboard=True, one_time_keyboard=True
@@ -25,7 +25,7 @@ keyboard_gender = create_keyboard(
 )
 
 
-def create_inline_keyboard(data):
+def create_inline_keyboard(data) -> InlineKeyboardMarkup:
     buttons = [InlineKeyboardButton(callback_data=d, text=t) for d, t in data]
     ikb_builder = InlineKeyboardBuilder()
     ikb_builder.row(*buttons, width=1)
@@ -82,7 +82,7 @@ def inline_kb_do_exercise() -> InlineKeyboardMarkup:
     return create_inline_keyboard(data)
 
 
-async def inline_kb_other_exercise(chat_id: int, workout_type: int):
+async def inline_kb_other_exercise(chat_id: int, workout_type: int) -> InlineKeyboardMarkup:
     exercises = await database.get_all_exercise_types(chat_id)
     current_exercises = await database.get_workout_exercises(workout_type)
     current_exercises = [i[0] for i in current_exercises]
@@ -94,13 +94,13 @@ def inline_kb_history_exercise() -> InlineKeyboardMarkup:
     data = list(lexicon.HISTORY_EXERCISE.items())
     return create_inline_keyboard(data)
 
-async def inline_kb_delete_exercise (workout: int):
+async def inline_kb_delete_exercise (workout: int) -> InlineKeyboardMarkup:
     exercises = await database.get_weight_workout(workout)
     data = [(str(k), f"{i}: {j}") for i, j, k in exercises]
     return create_inline_keyboard(data + list(lexicon.DELETE_EXERCISE.items()))
 
 # Функция для настройки кнопки Menu бота
-async def set_main_menu(bot: Bot):
+async def set_main_menu(bot: Bot) -> None:
     main_menu_commands = [
         BotCommand(command=command, description=description)
         for command, description in lexicon.COMMANDS.items()

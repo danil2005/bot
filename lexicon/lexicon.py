@@ -90,7 +90,7 @@ async def weight_workout(workout):
     return "\n".join([f"{i}: {j}" for i, j, _ in data])
 
 
-async def workout_type_text(workout_type: int):
+async def workout_type_text(workout_type: str):
     res = await database.get_name_workout_type(workout_type) + "\n\n"
     # получаем id последних тренировок
     ids = await database.get_latest_workout_ids(workout_type)

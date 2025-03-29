@@ -18,16 +18,7 @@ async def get_db_cursor():
         await cursor.close()
         conn.close()
 
-async def add_questionnaire(data: dict):
-    query = '''
-        INSERT INTO Users
-        VALUES (%s, %s, %s, %s, %s, %s)
-    '''
-    async with get_db_cursor() as cursor:
-        await cursor.execute(query, tuple(data.values()))
-        await cursor.connection.commit()
-
-async def check_db():
+async def check_db() -> None:
     config_db = {
         'host': config.data_base.host,
         'user': config.data_base.user,
@@ -57,6 +48,15 @@ async def check_db():
     await conn.commit()
     conn.close()
 
+async def add_questionnaire(data: dict)  -> None:
+    query = '''
+        INSERT INTO Users
+        VALUES (%s, %s, %s, %s, %s, %s)
+    '''
+    async with get_db_cursor() as cursor:
+        await cursor.execute(query, tuple(data.values()))
+        await cursor.connection.commit()
+
 async def check_name_workout_type(user_id: int, name: str) -> bool:
     query = '''
         SELECT * FROM Workout_types
@@ -67,7 +67,7 @@ async def check_name_workout_type(user_id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_workout_type(user_id: int, name: str):
+async def add_new_workout_type(user_id: int, name: str) -> None:
     if await check_name_workout_type(user_id, name):
         return False
     query = '''
@@ -79,7 +79,7 @@ async def add_new_workout_type(user_id: int, name: str):
         await cursor.connection.commit()
     return True
 
-async def get_workout_types(user_id: int, is_active = None) -> tuple:
+async def get_workout_types(user_id: int, is_active = None) -> list[tuple]:
     query = '''
         SELECT id, name FROM Workout_types
         WHERE user_id = %s
@@ -96,7 +96,7 @@ async def get_workout_types(user_id: int, is_active = None) -> tuple:
         rows = await cursor.fetchall()
     return rows
 
-async def set_active_workout_type(workout_type: str, is_active: bool):
+async def set_active_workout_type(workout_type: str, is_active: bool) -> None:
     query = '''
         UPDATE Workout_types SET is_active = %s
         WHERE id = %s
@@ -105,7 +105,7 @@ async def set_active_workout_type(workout_type: str, is_active: bool):
         await cursor.execute(query, (is_active, int(workout_type)))
         await cursor.connection.commit()
 
-async def delete_workout_type(workout_type: str):
+async def delete_workout_type(workout_type: str) -> None:
     query = '''
         DELETE FROM Workout_types
         WHERE id = %s
@@ -114,7 +114,7 @@ async def delete_workout_type(workout_type: str):
         await cursor.execute(query, (int(workout_type),))
         await cursor.connection.commit()
 
-async def get_name_workout_type(workout_type: int) -> str:
+async def get_name_workout_type(workout_type: str) -> str:
     query = '''
         SELECT name FROM Workout_types
         WHERE id = %s
@@ -134,7 +134,7 @@ async def check_name_exercise_type(user_id: int, name: str) -> bool:
         rows = await cursor.fetchall()
     return bool(rows)
 
-async def add_new_exercise_type(user_id: int, name: str):
+async def add_new_exercise_type(user_id: int, name: str) -> int:
     if await check_name_exercise_type(user_id, name):
         return False
     query = '''
