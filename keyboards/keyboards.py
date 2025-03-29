@@ -26,7 +26,7 @@ keyboard_gender = create_keyboard(
 
 
 def create_inline_keyboard(data) -> InlineKeyboardMarkup:
-    buttons = [InlineKeyboardButton(callback_data=d, text=t) for d, t in data]
+    buttons = [InlineKeyboardButton(callback_data=str(d), text=t) for d, t in data]
     ikb_builder = InlineKeyboardBuilder()
     ikb_builder.row(*buttons, width=1)
     return ikb_builder.as_markup()

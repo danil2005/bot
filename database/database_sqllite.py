@@ -219,7 +219,7 @@ async def get_workout_exercises(workout_type: int):
         await cursor.execute(query_exercises, (id_workout,))
         rows = await cursor.fetchall()
 
-    result = [(str(i), j) for i, j in rows]
+    result = [(i, j) for i, j in rows]
     return result
 
 async def get_latest_workout_ids(workout_type: int):

@@ -16,7 +16,7 @@ router = Router()
 # Меню тренировки
 @router.callback_query(StateFilter(FSMFillForm.main_menu), F.data.isdigit())
 async def process_menu_workout(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(workout_type=callback.data)
+    await state.update_data(workout_type=int(callback.data))
     await callback.answer()
     await callback.message.edit_text(
         text=await lexicon.workout_type_text(callback.data),
@@ -65,7 +65,7 @@ async def process_select_exercise(callback: CallbackQuery, state: FSMContext):
         reply_markup=keyboards.inline_kb_do_exercise(),
     )
     await state.set_state(FSMFillForm.do_exercise)
-    data["completed_exercises"].append(callback.data)
+    data["completed_exercises"].append(int(callback.data))
     await state.update_data(
         exercise_type=int(callback.data),
         exercise=id_exercise,
@@ -138,7 +138,7 @@ async def process_delete_exercise(callback: CallbackQuery, state: FSMContext):
 async def process_select_exercise_for_del(callback: CallbackQuery, state: FSMContext):
     exerecise_del = await database.delete_exercise(callback.data)
     data = await state.get_data()
-    data['completed_exercises'].remove(str(exerecise_del[0]))
+    data['completed_exercises'].remove(exerecise_del[0])
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON['delete_exercise'],

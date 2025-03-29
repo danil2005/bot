@@ -227,7 +227,7 @@ async def get_workout_exercises(workout_type: int):
     async with get_db_cursor() as cursor:
         await cursor.execute(query_get_exercises, (id_workout,))
         rows = await cursor.fetchall()
-    return [(str(row[0]), row[1]) for row in rows]
+    return [(row[0], row[1]) for row in rows]
 
 async def get_latest_workout_ids(workout_type: int):
     query = '''
