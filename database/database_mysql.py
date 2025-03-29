@@ -96,25 +96,25 @@ async def get_workout_types(user_id: int, is_active = None) -> list[tuple]:
         rows = await cursor.fetchall()
     return rows
 
-async def set_active_workout_type(workout_type: str, is_active: bool) -> None:
+async def set_active_workout_type(workout_type: int, is_active: bool) -> None:
     query = '''
         UPDATE Workout_types SET is_active = %s
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (is_active, int(workout_type)))
+        await cursor.execute(query, (is_active, workout_type))
         await cursor.connection.commit()
 
-async def delete_workout_type(workout_type: str) -> None:
+async def delete_workout_type(workout_type: int) -> None:
     query = '''
         DELETE FROM Workout_types
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (int(workout_type),))
+        await cursor.execute(query, (workout_type,))
         await cursor.connection.commit()
 
-async def get_name_workout_type(workout_type: str) -> str:
+async def get_name_workout_type(workout_type: int) -> str:
     query = '''
         SELECT name FROM Workout_types
         WHERE id = %s
@@ -147,7 +147,7 @@ async def add_new_exercise_type(user_id: int, name: str) -> int:
         await cursor.connection.commit()
     return last_id
 
-async def start_workout(user_id, workout_type):
+async def start_workout(user_id: int, workout_type: int) -> int:
     date = datetime.today().strftime("%Y-%m-%d")
     start = datetime.now().strftime("%H:%M:%S")
     query = '''
@@ -160,7 +160,7 @@ async def start_workout(user_id, workout_type):
         await cursor.connection.commit()
     return last_id
 
-async def start_exercise(exercise_type, workout):
+async def start_exercise(exercise_type: int, workout: int) -> int:
     query = '''
         INSERT INTO Exercises (type_id, id_workout, weight)
         VALUES (%s, %s, "")
@@ -171,7 +171,7 @@ async def start_exercise(exercise_type, workout):
         await cursor.connection.commit()
     return last_id
 
-async def get_weight_workout(workout):
+async def get_weight_workout(workout: int) -> list[tuple]:
     query = '''
         SELECT Exercise_types.name, Exercises.weight, Exercises.id
         FROM Exercises
@@ -184,7 +184,7 @@ async def get_weight_workout(workout):
         rows = await cursor.fetchall()
     return rows
 
-async def end_workout(workout: int):
+async def end_workout(workout: int) -> None:
     query_get_workout = '''
         SELECT date, start FROM Workouts
         WHERE id = %s
@@ -204,7 +204,7 @@ async def end_workout(workout: int):
         await cursor.execute(query_update_workout, (end_str, duration, workout))
         await cursor.connection.commit()
 
-async def get_workout_exercises(workout_type: int):
+async def get_workout_exercises(workout_type: int) -> list[tuple]:
     query_get_latest_workout = '''
         SELECT id
         FROM Workouts
@@ -227,9 +227,9 @@ async def get_workout_exercises(workout_type: int):
     async with get_db_cursor() as cursor:
         await cursor.execute(query_get_exercises, (id_workout,))
         rows = await cursor.fetchall()
-    return [(row[0], row[1]) for row in rows]
+    return rows #[(row[0], row[1]) for row in rows]
 
-async def get_latest_workout_ids(workout_type: int):
+async def get_latest_workout_ids(workout_type: int) -> list[int]:
     query = '''
         SELECT id
         FROM Workouts
@@ -242,7 +242,7 @@ async def get_latest_workout_ids(workout_type: int):
         rows = await cursor.fetchall()
     return [row[0] for row in rows]
 
-async def get_date_workout(workout: int):
+async def get_date_workout(workout: int) -> str:
     query = '''
         SELECT date FROM Workouts
         WHERE id = %s
@@ -252,7 +252,7 @@ async def get_date_workout(workout: int):
         rows = await cursor.fetchall()
     return rows[0][0].strftime("%d-%m-%Y")
 
-async def update_exercise(exercise, weight):
+async def update_exercise(exercise: int, weight: str) -> None:
     query_get_weight = '''
         SELECT weight FROM Exercises
         WHERE id = %s
@@ -271,7 +271,7 @@ async def update_exercise(exercise, weight):
         await cursor.execute(query_update_weight, (text_weight, exercise))
         await cursor.connection.commit()
 
-async def get_all_exercise_types(chat_id: int):
+async def get_all_exercise_types(chat_id: int) -> list[tuple]:
     query = '''
         SELECT Exercise_types.id, Exercise_types.name
         FROM Exercise_types
@@ -280,9 +280,9 @@ async def get_all_exercise_types(chat_id: int):
     async with get_db_cursor() as cursor:
         await cursor.execute(query, (chat_id,))
         rows = await cursor.fetchall()
-    return [(str(row[0]), row[1]) for row in rows]
+    return rows #[(str(row[0]), row[1]) for row in rows]
 
-async def get_info_workout(workout: int):
+async def get_info_workout(workout: int) -> tuple:
     query = '''
         SELECT date, start, duration, type_id FROM Workouts
         WHERE id = %s
@@ -292,7 +292,7 @@ async def get_info_workout(workout: int):
         row = await cursor.fetchone()
     return row
 
-async def get_exercise_history(exercise_type: int):
+async def get_exercise_history(exercise_type: int) -> list[tuple]:
     query = '''
         SELECT Workout_types.name, Workouts.date, Workouts.start, Exercises.weight
         FROM Exercises
@@ -306,18 +306,18 @@ async def get_exercise_history(exercise_type: int):
         rows = await cursor.fetchall()
     return rows
 
-async def delete_exercise(exercise: int):
+async def delete_exercise(exercise: int) -> tuple:
     exercise_del = await get_exercise_type(exercise)
     query = '''
         DELETE FROM Exercises
         WHERE id = %s
     '''
     async with get_db_cursor() as cursor:
-        await cursor.execute(query, (int(exercise),))
+        await cursor.execute(query, (exercise,))
         await cursor.connection.commit()
     return exercise_del
 
-async def get_exercise_type(exercise: int):
+async def get_exercise_type(exercise: int) -> tuple:
     query = '''
         SELECT Exercises.type_id, Exercise_types.name
         FROM Exercises

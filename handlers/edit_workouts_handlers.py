@@ -28,7 +28,7 @@ async def process_edite_workouts(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(
         text=lexicon.MAIN_MENU["edit_workouts"],
-        reply_markup=keyboards.inline_kb_edit_workouts,
+        reply_markup=keyboards.inline_kb_edit_workouts(),
     )
     await state.set_state(FSMFillForm.edite_workouts)
 
@@ -84,7 +84,7 @@ async def process_archive_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.archive), F.data.isdigit())
 async def process_archive_select(callback: CallbackQuery):
-    await database.set_active_workout_type(callback.data, False)
+    await database.set_active_workout_type(int(callback.data), False)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["select_archive"],
@@ -115,7 +115,7 @@ async def process_delete_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.delete), F.data.isdigit())
 async def process_delete_select(callback: CallbackQuery):
-    await database.delete_workout_type(callback.data)
+    await database.delete_workout_type(int(callback.data))
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["delete"],
@@ -146,7 +146,7 @@ async def process_dearchive_workout(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(FSMFillForm.dearchive), F.data.isdigit())
 async def process_dearchive_select(callback: CallbackQuery):
-    await database.set_active_workout_type(callback.data, True)
+    await database.set_active_workout_type(int(callback.data), True)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON["dearchive"],

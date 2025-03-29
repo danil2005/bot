@@ -7,15 +7,15 @@ from aiogram.types import (
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database import database
 from lexicon import lexicon
+from aiogram import Bot
+from aiogram.types import BotCommand
+
 
 def create_keyboard(*names: str) -> ReplyKeyboardMarkup:
     buttons = [KeyboardButton(text=i) for i in names]
     return ReplyKeyboardMarkup(
         keyboard=[buttons], resize_keyboard=True, one_time_keyboard=True
     )
-
-from aiogram import Bot
-from aiogram.types import BotCommand
 
 keyboard_no_yes = create_keyboard(
     lexicon.BUTTON["yes"], lexicon.BUTTON["no"]
@@ -25,7 +25,7 @@ keyboard_gender = create_keyboard(
 )
 
 
-def create_inline_keyboard(data) -> InlineKeyboardMarkup:
+def create_inline_keyboard(data: list[tuple[str, str]]) -> InlineKeyboardMarkup:
     buttons = [InlineKeyboardButton(callback_data=str(d), text=t) for d, t in data]
     ikb_builder = InlineKeyboardBuilder()
     ikb_builder.row(*buttons, width=1)
@@ -39,8 +39,8 @@ async def inline_kb_main_menu(user_id: int) -> InlineKeyboardMarkup:
     return create_inline_keyboard(data)
 
 
-inline_kb_edit_workouts = create_inline_keyboard(lexicon.EDIT_WORKOUTS.items())
-
+def inline_kb_edit_workouts() -> InlineKeyboardMarkup:
+    return create_inline_keyboard(lexicon.EDIT_WORKOUTS.items())
 
 async def inline_kb_archive_workouts(user_id: int) -> InlineKeyboardMarkup:
     workouts = await database.get_workout_types(user_id, 'active')
@@ -69,10 +69,11 @@ def inline_kb_menu_workouts() -> InlineKeyboardMarkup:
 
 
 async def inline_kb_do_workout(
-    workout_type: int, completed_exercises: list[int] = []
+    workout_type: int, completed_exercises: list[int] | None = None
 ) -> InlineKeyboardMarkup:
-    exercises = await database.get_workout_exercises(workout_type)
-    exercises = [i for i in exercises if i[0] not in completed_exercises]
+    exercises = list(await database.get_workout_exercises(workout_type))
+    if completed_exercises is not None:
+        exercises = [i for i in exercises if i[0] not in completed_exercises]
     data = exercises + list(lexicon.START_WORKOUT.items())
     return create_inline_keyboard(data)
 
@@ -82,10 +83,10 @@ def inline_kb_do_exercise() -> InlineKeyboardMarkup:
     return create_inline_keyboard(data)
 
 
-async def inline_kb_other_exercise(chat_id: int, workout_type: int) -> InlineKeyboardMarkup:
+async def inline_kb_other_exercise(chat_id: int, workout_type: int, completed_exercises: list[int]) -> InlineKeyboardMarkup:
     exercises = await database.get_all_exercise_types(chat_id)
     current_exercises = await database.get_workout_exercises(workout_type)
-    current_exercises = [i[0] for i in current_exercises]
+    current_exercises = [i[0] for i in current_exercises] + completed_exercises
     exercises = [i for i in exercises if i[0] not in current_exercises]
     return create_inline_keyboard(exercises + list(lexicon.OTHER_EXERCISE.items()))
 
