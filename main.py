@@ -38,7 +38,7 @@ async def main():
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
     
-    redis = Redis(host="localhost")
+    redis = Redis(host=config.redis.host, port=config.redis.port)
     storage = RedisStorage(redis=redis)
 
     dp = Dispatcher(storage=storage)
