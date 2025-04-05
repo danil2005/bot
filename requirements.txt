@@ -21,3 +21,4 @@ python-dotenv==1.1.0
 redis==5.2.1
 typing_extensions==4.13.0
 yarl==1.18.3
+cryptography==44.0.1

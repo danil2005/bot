@@ -35,7 +35,7 @@ def load_config(path: str | None = None) -> Config:
 
     load_dotenv(dotenv_path=path)
 
-    type_db = type_db=os.getenv("TYPE_DB")
+    type_db = os.getenv("TYPE_DB")
 
     if type_db == "mysql":
         return Config(
