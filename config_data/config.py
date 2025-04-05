@@ -31,9 +31,10 @@ class Config:
     redis: Redis
 
 
-def load_config(path: str | None = None) -> Config:
+def load_config() -> Config:
 
-    load_dotenv(dotenv_path=path)
+    if os.path.exists(".env"):
+        load_dotenv()
 
     type_db = os.getenv("TYPE_DB")
 

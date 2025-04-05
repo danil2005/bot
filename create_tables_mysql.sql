@@ -2,9 +2,9 @@
 -- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Хост: db
--- Время создания: Фев 22 2025 г., 09:05
--- Версия сервера: 9.2.0
+-- Хост: 172.17.0.3
+-- Время создания: Апр 05 2025 г., 07:56
+-- Версия сервера: 8.0.41
 -- Версия PHP: 8.2.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `exercises`
+-- Структура таблицы `Exercises`
 --
 
-CREATE TABLE `exercises` (
+CREATE TABLE `Exercises` (
   `id` int NOT NULL,
   `type_id` int NOT NULL,
   `weight` varchar(255) NOT NULL,
@@ -37,10 +37,10 @@ CREATE TABLE `exercises` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `exercise_types`
+-- Структура таблицы `Exercise_types`
 --
 
-CREATE TABLE `exercise_types` (
+CREATE TABLE `Exercise_types` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
   `name` varchar(255) NOT NULL
@@ -49,10 +49,10 @@ CREATE TABLE `exercise_types` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `users`
+-- Структура таблицы `Users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `Users` (
   `chat_id` int NOT NULL,
   `name` varchar(255) NOT NULL,
   `age` int NOT NULL,
@@ -64,10 +64,10 @@ CREATE TABLE `users` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `workouts`
+-- Структура таблицы `Workouts`
 --
 
-CREATE TABLE `workouts` (
+CREATE TABLE `Workouts` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
   `type_id` int NOT NULL,
@@ -80,10 +80,10 @@ CREATE TABLE `workouts` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `workout_types`
+-- Структура таблицы `Workout_types`
 --
 
-CREATE TABLE `workout_types` (
+CREATE TABLE `Workout_types` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -95,38 +95,38 @@ CREATE TABLE `workout_types` (
 --
 
 --
--- Индексы таблицы `exercises`
+-- Индексы таблицы `Exercises`
 --
-ALTER TABLE `exercises`
+ALTER TABLE `Exercises`
   ADD PRIMARY KEY (`id`),
   ADD KEY `type_id` (`type_id`),
   ADD KEY `id_workout` (`id_workout`);
 
 --
--- Индексы таблицы `exercise_types`
+-- Индексы таблицы `Exercise_types`
 --
-ALTER TABLE `exercise_types`
+ALTER TABLE `Exercise_types`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Индексы таблицы `users`
+-- Индексы таблицы `Users`
 --
-ALTER TABLE `users`
+ALTER TABLE `Users`
   ADD PRIMARY KEY (`chat_id`);
 
 --
--- Индексы таблицы `workouts`
+-- Индексы таблицы `Workouts`
 --
-ALTER TABLE `workouts`
+ALTER TABLE `Workouts`
   ADD PRIMARY KEY (`id`),
   ADD KEY `type_id` (`type_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Индексы таблицы `workout_types`
+-- Индексы таблицы `Workout_types`
 --
-ALTER TABLE `workout_types`
+ALTER TABLE `Workout_types`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
@@ -135,27 +135,27 @@ ALTER TABLE `workout_types`
 --
 
 --
--- AUTO_INCREMENT для таблицы `exercises`
+-- AUTO_INCREMENT для таблицы `Exercises`
 --
-ALTER TABLE `exercises`
+ALTER TABLE `Exercises`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT для таблицы `exercise_types`
+-- AUTO_INCREMENT для таблицы `Exercise_types`
 --
-ALTER TABLE `exercise_types`
+ALTER TABLE `Exercise_types`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT для таблицы `workouts`
+-- AUTO_INCREMENT для таблицы `Workouts`
 --
-ALTER TABLE `workouts`
+ALTER TABLE `Workouts`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT для таблицы `workout_types`
+-- AUTO_INCREMENT для таблицы `Workout_types`
 --
-ALTER TABLE `workout_types`
+ALTER TABLE `Workout_types`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -163,30 +163,30 @@ ALTER TABLE `workout_types`
 --
 
 --
--- Ограничения внешнего ключа таблицы `exercises`
+-- Ограничения внешнего ключа таблицы `Exercises`
 --
-ALTER TABLE `exercises`
-  ADD CONSTRAINT `exercises_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `exercise_types` (`id`),
-  ADD CONSTRAINT `exercises_ibfk_2` FOREIGN KEY (`id_workout`) REFERENCES `workouts` (`id`) ON DELETE CASCADE;
+ALTER TABLE `Exercises`
+  ADD CONSTRAINT `Exercises_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `Exercise_types` (`id`),
+  ADD CONSTRAINT `Exercises_ibfk_2` FOREIGN KEY (`id_workout`) REFERENCES `Workouts` (`id`) ON DELETE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `exercise_types`
+-- Ограничения внешнего ключа таблицы `Exercise_types`
 --
-ALTER TABLE `exercise_types`
-  ADD CONSTRAINT `exercise_types_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
+ALTER TABLE `Exercise_types`
+  ADD CONSTRAINT `Exercise_types_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`chat_id`);
 
 --
--- Ограничения внешнего ключа таблицы `workouts`
+-- Ограничения внешнего ключа таблицы `Workouts`
 --
-ALTER TABLE `workouts`
-  ADD CONSTRAINT `workouts_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `workout_types` (`id`),
-  ADD CONSTRAINT `workouts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
+ALTER TABLE `Workouts`
+  ADD CONSTRAINT `Workouts_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `Workout_types` (`id`),
+  ADD CONSTRAINT `Workouts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `Users` (`chat_id`);
 
 --
--- Ограничения внешнего ключа таблицы `workout_types`
+-- Ограничения внешнего ключа таблицы `Workout_types`
 --
-ALTER TABLE `workout_types`
-  ADD CONSTRAINT `workout_types_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`chat_id`);
+ALTER TABLE `Workout_types`
+  ADD CONSTRAINT `Workout_types_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`chat_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
