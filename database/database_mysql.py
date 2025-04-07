@@ -2,11 +2,14 @@ from datetime import datetime
 from config_data.config import config
 import aiomysql
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+from asyncio import sleep
 
 @asynccontextmanager
-async def get_db_cursor():
+async def get_db_cursor() -> AsyncGenerator[aiomysql.Cursor, None]:
     conn = await aiomysql.connect(
         host=config.data_base.host,
+        port=config.data_base.port,
         user=config.data_base.user,
         password=config.data_base.password,
         db=config.data_base.name_db
@@ -21,10 +24,18 @@ async def get_db_cursor():
 async def check_db() -> None:
     config_db = {
         'host': config.data_base.host,
+        'port': config.data_base.port,
         'user': config.data_base.user,
-        'password': config.data_base.password,
+        'password': config.data_base.password
     }
+
+    for i in range(5):
+        try:
+            conn = await aiomysql.connect(**config_db)
+        except:
+            await sleep(5)
     conn = await aiomysql.connect(**config_db)
+
     check_db_query = f"SHOW DATABASES LIKE '{config.data_base.name_db}'"
     create_db_query = f"CREATE DATABASE {config.data_base.name_db}"
     
