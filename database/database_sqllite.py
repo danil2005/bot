@@ -4,6 +4,7 @@ from datetime import datetime
 from config_data.config import config
 
 async def check_db() -> None:
+    """Проверяет БД. При необходимости создает новую БД со структурой"""
     if not os.path.exists("bot_gym_db.db"):
         # Если файл не существует, создаем новую базу данных
         open("bot_gym_db.db", 'w').close()
@@ -20,6 +21,7 @@ async def check_db() -> None:
         await conn.commit()
 
 async def add_questionnaire(data: dict) -> None:
+    """Добавляет анкету пользователя в БД"""
     query = '''
         INSERT INTO Users
         VALUES (?,?,?,?,?,?)
@@ -30,6 +32,7 @@ async def add_questionnaire(data: dict) -> None:
         await conn.commit()
 
 async def check_name_workout_type(user_id: int, name: str) -> bool:
+    """Проверяет есть ли уже такое имя тренировки в БД"""
     query = '''
         SELECT * FROM Workout_types
         WHERE user_id = ? AND name = ?
@@ -41,6 +44,7 @@ async def check_name_workout_type(user_id: int, name: str) -> bool:
     return bool(rows)
 
 async def add_new_workout_type(user_id: int, name: str) -> None:
+    """Создает новый тип тренировки"""
     if await check_name_workout_type(user_id, name):
         return False
     query = '''
@@ -54,6 +58,7 @@ async def add_new_workout_type(user_id: int, name: str) -> None:
     return True
 
 async def get_workout_types(user_id: int, is_active = None) -> list[tuple]:
+    """Возвращает типы тренировок пользователя - активные, неактивные, все"""
     query = '''
         SELECT id, name FROM Workout_types
         WHERE user_id = ?
@@ -72,6 +77,7 @@ async def get_workout_types(user_id: int, is_active = None) -> list[tuple]:
     return rows
 
 async def set_active_workout_type(workout_type: int, is_active: bool)-> None:
+    """Устанавливает флаг активности типа тренировки"""
     query = '''
         UPDATE Workout_types SET is_active = ?
         WHERE id = ?
@@ -82,6 +88,7 @@ async def set_active_workout_type(workout_type: int, is_active: bool)-> None:
         await conn.commit()
 
 async def delete_workout_type(workout_type: int) -> None:
+    """Удаляет тип тренировки"""
     query = '''
         DELETE FROM Workout_types
         WHERE id = ?
@@ -92,6 +99,7 @@ async def delete_workout_type(workout_type: int) -> None:
         await conn.commit()
 
 async def get_name_workout_type(workout_type: int) -> str:
+    """Возвращает имя типа тренировки"""
     query = '''
         SELECT name FROM Workout_types
         WHERE id = ?
@@ -103,6 +111,7 @@ async def get_name_workout_type(workout_type: int) -> str:
     return rows[0][0]
 
 async def check_name_exercise_type(user_id: int, name: str) -> bool:
+    """Проверяет есть ли упражнение с таким именем у пользователя"""
     query = '''
         SELECT * FROM Exercise_types
         WHERE user_id = ? AND name = ?
@@ -114,6 +123,7 @@ async def check_name_exercise_type(user_id: int, name: str) -> bool:
     return bool(rows)
 
 async def add_new_exercise_type(user_id: int, name: str) -> int:
+    """Создает новый тип упражнения"""
     if await check_name_exercise_type(user_id, name):
         return False
     query = '''
@@ -128,6 +138,7 @@ async def add_new_exercise_type(user_id: int, name: str) -> int:
     return last_id
 
 async def start_workout(user_id: int, workout_type: int) -> int:
+    """Фиксирует в БД страт тренировки"""
     data = datetime.today().strftime("%d-%m-%Y")
     start = datetime.now().strftime("%H:%M:%S")
     query = '''
@@ -142,6 +153,7 @@ async def start_workout(user_id: int, workout_type: int) -> int:
     return last_id
 
 async def start_exercise(exercise_type: int, workout: int) -> int:
+    """Записывает в БД старт упражнения"""
     query = '''
         INSERT INTO Exercises (type_id, id_workout, weight)
         VALUES (?,?,"")
@@ -154,6 +166,7 @@ async def start_exercise(exercise_type: int, workout: int) -> int:
     return last_id
 
 async def get_weight_workout(workout: int) -> list[tuple]:
+    """Возвращает выполненые упражнения с весами для конкретной тренировки"""
     query = '''
         SELECT Exercise_types.name, Exercises.weight, Exercises.id
         FROM Exercises
@@ -167,6 +180,7 @@ async def get_weight_workout(workout: int) -> list[tuple]:
     return rows
 
 async def end_workout(workout: int) -> None:
+    """Фиксирует в БД конец тренировки"""
     query_select = '''
         SELECT data, start FROM Workouts
         WHERE id = ?
@@ -192,6 +206,7 @@ async def end_workout(workout: int) -> None:
         await conn.commit()
 
 async def get_workout_exercises(workout_type: int) -> list[tuple]:
+    """Возвращает типы упражнения, которые были в последней тренировке этого типа"""
     query_last_workout = '''
         SELECT id
         FROM Workouts
@@ -223,6 +238,7 @@ async def get_workout_exercises(workout_type: int) -> list[tuple]:
     return rows #result
 
 async def get_latest_workout_ids(workout_type: int) -> list[int]:
+    """Возвращает последние 3 id тренировок для типа тренировки"""
     query = '''
         SELECT id
         FROM Workouts
@@ -237,6 +253,7 @@ async def get_latest_workout_ids(workout_type: int) -> list[int]:
     return [i[0] for i in rows]
 
 async def get_date_workout(workout: int) -> str:
+    """Возвращает дату тренировки"""
     query = '''
         SELECT data FROM Workouts
         WHERE id = ?
@@ -248,6 +265,7 @@ async def get_date_workout(workout: int) -> str:
     return rows[0][0]
 
 async def update_exercise(exercise: int, weight: str) -> None:
+    """Добавляет новый вес к упражнению"""
     query_select = '''
         SELECT weight FROM Exercises
         WHERE id = ?
@@ -273,6 +291,7 @@ async def update_exercise(exercise: int, weight: str) -> None:
         await conn.commit()
 
 async def get_all_exercise_types(chat_id: int) -> list[tuple]:
+    """Возвращает все типы упражнений"""
     query = '''
         SELECT Exercise_types.id, Exercise_types.name
         FROM Exercise_types
@@ -286,6 +305,7 @@ async def get_all_exercise_types(chat_id: int) -> list[tuple]:
     return rows #result
 
 async def get_info_workout(workout: int) -> tuple:
+    """Возвращает информацию о тренировке"""
     query = '''
         SELECT data, start, duration, type_id FROM Workouts
         WHERE id = ?
@@ -298,6 +318,7 @@ async def get_info_workout(workout: int) -> tuple:
 
 
 async def get_exercise_history(exercise_type: int) -> list[tuple]:
+    """Возвращает веса последних 5 упражнений определенного типа"""
     query = '''
         SELECT Workout_types.name, Workouts.data, Workouts.start, Exercises.weight
         FROM Exercises
@@ -313,6 +334,7 @@ async def get_exercise_history(exercise_type: int) -> list[tuple]:
     return rows
 
 async def delete_exercise(exercise: int) -> tuple:
+    """Удаляет упражнение из тренировки"""
     exerecise_del = await get_exercise_type(exercise)
     query = '''
         DELETE FROM Exercises
@@ -325,6 +347,7 @@ async def delete_exercise(exercise: int) -> tuple:
     return exerecise_del
 
 async def get_exercise_type(exercise: int) -> tuple:
+    """Возвращает тип упражения"""
     query = '''
         SELECT Exercises.type_id, Exercise_types.name
         FROM Exercises

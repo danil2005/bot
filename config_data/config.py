@@ -32,6 +32,7 @@ class Config:
 
 
 def load_config() -> Config:
+    """Функция возвращает объект с переменными окружениями, необходимыми для работы бота"""
 
     if os.path.exists(".env"):
         load_dotenv()
