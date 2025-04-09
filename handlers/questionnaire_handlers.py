@@ -13,15 +13,16 @@ router = Router()
 
 @router.message(CommandStart(), StateFilter(default_state))
 async def process_start_command(message: Message, state: FSMContext):
+    """Обработка кнопки /start"""
     await message.answer(lexicon.LEXICON[message.text], reply_markup=keyboards.keyboard_no_yes)
     await state.set_state(FSMFillForm.is_ready_questionnaire)
 
 
-# Обработка ответа на вопрос заполнения анкеты
 @router.message(
     StateFilter(FSMFillForm.is_ready_questionnaire), F.text == lexicon.BUTTON["yes"]
 )
 async def process_yes_questionnaire(message: Message, state: FSMContext):
+    """Обработка положительного ответа на предложение заполнить анкету"""
     await message.answer(lexicon.LEXICON["enter_name"], reply_markup=ReplyKeyboardRemove())
     await state.set_state(FSMFillForm.fill_name)
     await state.update_data(chat_id=message.chat.id)
@@ -31,20 +32,22 @@ async def process_yes_questionnaire(message: Message, state: FSMContext):
     StateFilter(FSMFillForm.is_ready_questionnaire), F.text == lexicon.BUTTON["no"]
 )
 async def process_no_questionnaire(message: Message, state: FSMContext):
+    """Обработка отрицательного ответа на предложение заполнить анкету"""
     await message.answer(lexicon.LEXICON["wait"], reply_markup=ReplyKeyboardRemove())
     await state.clear()
 
 
 @router.message(StateFilter(FSMFillForm.is_ready_questionnaire))
 async def process_other_questionnaire(message: Message):
+    """Обработка ответа на предложение заполнить анкету, если пользователь не воспользовался кнопками"""
     await message.answer(lexicon.LEXICON["use_btn_pls"], reply_markup=keyboards.keyboard_no_yes)
 
 
-# Имя
 @router.message(
     StateFilter(FSMFillForm.fill_name), lambda x: all(map(str.isalpha, x.text.split()))
 )
 async def process_name(message: Message, state: FSMContext):
+    """Обработка корректно введенного имени"""
     await message.answer(lexicon.LEXICON["enter_age"])
     await state.update_data(name=message.text)
     await state.set_state(FSMFillForm.fill_age)
@@ -52,12 +55,13 @@ async def process_name(message: Message, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.fill_name))
 async def process_name_error(message: Message):
+    """Обработка некорректно введенного имени"""
     await message.answer(lexicon.LEXICON["error_name"])
 
 
-# Возраст
 @router.message(StateFilter(FSMFillForm.fill_age), F.text.isdigit())
 async def process_old(message: Message, state: FSMContext):
+    """Обработка корректно введенного возраста"""
     await message.answer(
         lexicon.LEXICON["enter_gender"], reply_markup=keyboards.keyboard_gender
     )
@@ -67,15 +71,16 @@ async def process_old(message: Message, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.fill_age))
 async def process_old_error(message: Message):
+    """Обработка некорректно введенного возраста"""
     await message.answer(lexicon.LEXICON["error_old"])
 
 
-# Пол
 @router.message(
     StateFilter(FSMFillForm.fill_gender),
     F.text.in_([lexicon.BUTTON["male"], lexicon.BUTTON["female"]]),
 )
 async def process_gender(message: Message, state: FSMContext):
+    """Обработка корректно введенного пола"""
     await message.answer(lexicon.LEXICON["enter_height"], reply_markup=ReplyKeyboardRemove())
     await state.update_data(gender=message.text.strip(lexicon.BUTTON["male"][0]+lexicon.BUTTON["female"][0]))
     await state.set_state(FSMFillForm.fill_height)
@@ -83,12 +88,13 @@ async def process_gender(message: Message, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.fill_gender))
 async def process_gender_error(message: Message):
+    """Обработка некорректно введенного пола"""
     await message.answer(lexicon.LEXICON["use_btn_pls"], reply_markup=keyboards.keyboard_gender)
 
 
-# Рост
 @router.message(StateFilter(FSMFillForm.fill_height), F.text.isdigit())
 async def process_height(message: Message, state: FSMContext):
+    """Обработка корректно введенного роста"""
     await message.answer(lexicon.LEXICON["enter_weight"])
     await state.update_data(height=int(message.text))
     await state.set_state(FSMFillForm.fill_weight)
@@ -96,12 +102,13 @@ async def process_height(message: Message, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.fill_height))
 async def process_height_error(message: Message):
+    """Обработка некорректно введенного роста"""
     await message.answer(lexicon.LEXICON["error_height"])
 
 
-# Вес
 @router.message(StateFilter(FSMFillForm.fill_weight), F.text.isdigit())
 async def process_weight(message: Message, state: FSMContext):
+    """Обработка корректно введенного веса"""
     await state.update_data(weight=int(message.text))
     await message.answer(
         lexicon.create_questionnaire_text(await state.get_data()),
@@ -112,6 +119,7 @@ async def process_weight(message: Message, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.fill_weight))
 async def process_weight_error(message: Message):
+    """Обработка некорректно введенного веса"""
     await message.answer(lexicon.LEXICON["error_weight"])
 
 
@@ -120,6 +128,7 @@ async def process_weight_error(message: Message):
     StateFilter(FSMFillForm.is_correct_questionnaire), F.text == lexicon.BUTTON["yes"]
 )
 async def process_yes_correct_que(message: Message, state: FSMContext):
+    """Обработка положительного ответа на вопрос о корректности анкеты"""
     await message.answer(
         lexicon.LEXICON["questionnaire_ready"], reply_markup=ReplyKeyboardRemove()
     )
@@ -135,6 +144,7 @@ async def process_yes_correct_que(message: Message, state: FSMContext):
     StateFilter(FSMFillForm.is_correct_questionnaire), F.text == lexicon.BUTTON["no"]
 )
 async def process_no_correct_que(message: Message, state: FSMContext):
+    """Обработка отрицательного ответа на вопрос о корректности анкеты"""
     await message.answer(
         lexicon.LEXICON["questionnaire_again"], reply_markup=ReplyKeyboardRemove()
     )
@@ -145,4 +155,5 @@ async def process_no_correct_que(message: Message, state: FSMContext):
 
 @router.message(StateFilter(FSMFillForm.is_correct_questionnaire))
 async def process_error_correct_que(message: Message):
+    """Обработка ответа на предложение заполнить анкету, если пользователь не воспользовался кнопками"""
     await message.answer(lexicon.LEXICON["use_btn_pls"], reply_markup=keyboards.keyboard_no_yes)
