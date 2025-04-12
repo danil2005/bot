@@ -3,12 +3,12 @@ from dotenv import load_dotenv
 import os
 
 
-@dataclass
+@dataclass(frozen=True)
 class TgBot:
     token: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class DataBase:
     host: str
     port: int
@@ -17,13 +17,13 @@ class DataBase:
     name_db: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Redis:
     host: str  
     port: int  
 
 
-@dataclass
+@dataclass(frozen=True)
 class Config:
     tg_bot: TgBot
     type_db: str
@@ -32,6 +32,7 @@ class Config:
 
 
 def load_config() -> Config:
+    """Функция возвращает объект с переменными окружениями, необходимыми для работы бота"""
 
     if os.path.exists(".env"):
         load_dotenv()

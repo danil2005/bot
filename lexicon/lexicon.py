@@ -1,4 +1,5 @@
 from database import database
+from types import MappingProxyType
 
 LEXICON: dict[str, str] = {
     "/start": "Привет! Этот бот поможет вести статистику тренировок.\n"
@@ -30,67 +31,69 @@ LEXICON: dict[str, str] = {
     "delete_exercise": "Выберите упражнение для удаления"
 }
 
-COMMANDS: dict[str, str] = {
+COMMANDS = MappingProxyType({
     "/start": "🚀 Старт 🚀",
     "/help": "📖 Справка по работе бота 📖",
-}
+})
 
-BUTTON: dict[str, str] = {
+BUTTON = MappingProxyType({
     "yes": "✅ ДА ✅",
     "no": "❌ НЕТ ❌",
     "male": "👨 Мужской 👨",
     "female": "👩 Женский 👩",
-}
+})
 
-MAIN_MENU: dict[str, str] = {
+MAIN_MENU = MappingProxyType({
     "edit_workouts": "⚙️ Редактировать тренировки ⚙️",
-}
+})
 
-EDIT_ACTION: dict[str, str] = {"ready": "✔️ Готово ✔️"}
+EDIT_ACTION = MappingProxyType({"ready": "✔️ Готово ✔️"})
 
-EDIT_WORKOUTS: dict[str, str] = {
+EDIT_WORKOUTS = MappingProxyType({
     "create_workout": "➕ Создать ➕",
     "archive": "📥 Архивировать 📥",
     "delete": "🗑️ Удалить 🗑️",
     "dearchive": "📤 Добавить из архива 📤",
     "main_menu": "🏠 Главное меню 🏠",
-}
+})
 
-WORKOUT_MENU: dict[str, str] = {
+WORKOUT_MENU = MappingProxyType({
     "start": "▶️ Старт ▶️",
     "main_menu": "🏠 Главное меню 🏠",
-}
+})
 
-START_WORKOUT: dict[str, str] = {
+START_WORKOUT = MappingProxyType({
     "new": "🆕 Новое упражнение 🆕",
     "other": "🔄 Другое упражнение 🔄",
     "delete": "🗑️ Удалить строку 🗑️",
     "end": "🏁 Конец тренировки 🏁",
-}
+})
 
-DO_EXERCISE: dict[str, str] = {
+DO_EXERCISE = MappingProxyType({
     "finish": "✅ Закончить упражнение ✅",
     "history": "📜 История 📜",
-}
+})
 
-OTHER_EXERCISE: dict[str, str] = {
+OTHER_EXERCISE = MappingProxyType({
     "back": "↩️ Назад ↩️",
-}
+})
 
-HISTORY_EXERCISE: dict[str, str] = {
+HISTORY_EXERCISE = MappingProxyType({
     "back": "↩️ Назад ↩️",
-}
+})
 
-DELETE_EXERCISE: dict[str, str] = {
+DELETE_EXERCISE = MappingProxyType({
     "back": "↩️ Назад ↩️",
-}
+})
 
 async def weight_workout(workout: int) -> str:
+    """Возвращает названия упражнений с весами для тренировки"""
     data = await database.get_weight_workout(workout)
     return "\n".join([f"{i}: {j}" for i, j, _ in data])
 
 
 async def workout_type_text(workout_type: int) -> str:
+    """Возвращает текст для типа транировки"""
     res = await database.get_name_workout_type(workout_type) + "\n\n"
     # получаем id последних тренировок
     ids = await database.get_latest_workout_ids(workout_type)
@@ -104,6 +107,7 @@ async def workout_type_text(workout_type: int) -> str:
 
 
 async def workout_end_text(workout: int) -> str:
+    """Возвращает текст для окончания тренировки"""
     info = await database.get_info_workout(workout)
     name = await database.get_name_workout_type(info[3])
 
@@ -113,6 +117,7 @@ async def workout_end_text(workout: int) -> str:
 
 
 async def history_exercise(exercise_type: int) -> str:
+    """Возвращает текст для истории упражнения"""
     data = await database.get_exercise_history(exercise_type)
     res = ""
     for name, date, time, weights in data:
@@ -120,6 +125,7 @@ async def history_exercise(exercise_type: int) -> str:
     return res
 
 def create_questionnaire_text(data: dict) -> str:
+    """Возвращает текст с анкетой пользователя"""
     return (
         "Вот ваша анкета:\n\n"
         f"Имя - {data['name']}\n"
