@@ -20,8 +20,8 @@ from database.database import check_db
 logger = logging.getLogger(__name__)
 
 
-# Функция конфигурирования и запуска бота
 async def main():
+    """Функция конфигурирования и запуска бота"""
     # Конфигурируем логирование
     logging.basicConfig(
         level=logging.DEBUG,
@@ -29,13 +29,10 @@ async def main():
         "[%(asctime)s] - %(name)s - %(message)s",
     )
 
-    # Выводим в консоль информацию о начале запуска бота
     logger.info("Starting bot")
 
-    # Проверяем базу данных асинхронно
     await check_db()
 
-    # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
     
     redis = Redis(host=config.redis.host, port=config.redis.port)
@@ -43,16 +40,13 @@ async def main():
 
     dp = Dispatcher(storage=storage)
 
-    # Настраиваем главное меню бота
     await set_main_menu(bot)
 
-    # Регистрируем роутеры в диспетчере
     dp.include_router(questionnaire_handlers.router)
     dp.include_router(edit_workouts_handlers.router)
     dp.include_router(workouts_handlers.router)
     dp.include_router(other_handlers.router)
 
-    # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
