@@ -150,6 +150,7 @@ async def process_no_correct_que(message: Message, state: FSMContext):
     )
     await message.answer(lexicon.LEXICON["enter_name"])
     await state.clear()
+    await state.update_data(chat_id=message.chat.id)
     await state.set_state(FSMFillForm.fill_name)
 
 
