@@ -122,8 +122,6 @@ async def process_weight_error(message: Message):
     """Обработка некорректно введенного веса"""
     await message.answer(lexicon.LEXICON["error_weight"])
 
-
-# Верна ли анкета
 @router.message(
     StateFilter(FSMFillForm.is_correct_questionnaire), F.text == lexicon.BUTTON["yes"]
 )

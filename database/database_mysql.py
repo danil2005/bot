@@ -142,8 +142,8 @@ async def get_name_workout_type(workout_type: int) -> str:
     '''
     async with get_db_cursor() as cursor:
         await cursor.execute(query, (workout_type,))
-        rows = await cursor.fetchall()
-    return rows[0][0]
+        row = await cursor.fetchone()
+    return row[0]
 
 async def check_name_exercise_type(user_id: int, name: str) -> bool:
     """Проверяет есть ли упражнение с таким именем у пользователя"""
@@ -248,14 +248,14 @@ async def get_workout_exercises(workout_type: int) -> list[tuple]:
     '''
     async with get_db_cursor() as cursor:
         await cursor.execute(query_get_latest_workout, (workout_type,))
-        rows = await cursor.fetchall()
-    if not rows:
+        row = await cursor.fetchone()
+    if not row:
         return []
-    id_workout = rows[0][0]
+    id_workout = row[0]
     async with get_db_cursor() as cursor:
         await cursor.execute(query_get_exercises, (id_workout,))
         rows = await cursor.fetchall()
-    return rows #[(row[0], row[1]) for row in rows]
+    return rows
 
 async def get_latest_workout_ids(workout_type: int) -> list[int]:
     """Возвращает последние 3 id тренировок для типа тренировки"""
@@ -294,8 +294,8 @@ async def update_exercise(exercise: int, weight: str) -> None:
     '''
     async with get_db_cursor() as cursor:
         await cursor.execute(query_get_weight, (exercise,))
-        rows = await cursor.fetchall()
-    old_weight = rows[0][0].split(' | ') if rows[0][0] else []
+        row = await cursor.fetchone()
+    old_weight = row[0].split(' | ') if row[0] else []
     old_weight.append(weight)
     text_weight = ' | '.join(old_weight)
     async with get_db_cursor() as cursor:
@@ -312,7 +312,7 @@ async def get_all_exercise_types(chat_id: int) -> list[tuple]:
     async with get_db_cursor() as cursor:
         await cursor.execute(query, (chat_id,))
         rows = await cursor.fetchall()
-    return rows #[(str(row[0]), row[1]) for row in rows]
+    return rows
 
 async def get_info_workout(workout: int) -> tuple:
     """Возвращает информацию о тренировке"""
@@ -355,7 +355,7 @@ async def delete_exercise(exercise: int) -> tuple:
 async def get_exercise_type(exercise: int) -> tuple:
     """Возвращает тип упражения"""
     query = '''
-        SELECT Exercises.type_id, Exercise_types.name
+        SELECT Exercises.type_id
         FROM Exercises
         INNER JOIN Exercise_types ON Exercises.type_id = Exercise_types.id
         WHERE Exercises.id = %s
@@ -363,4 +363,4 @@ async def get_exercise_type(exercise: int) -> tuple:
     async with get_db_cursor() as cursor:
         await cursor.execute(query, (exercise,))
         row = await cursor.fetchone()
-    return row
+    return row[0]

@@ -42,7 +42,7 @@ CREATE TABLE `Exercises` (
 
 CREATE TABLE `Exercise_types` (
   `id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -53,7 +53,7 @@ CREATE TABLE `Exercise_types` (
 --
 
 CREATE TABLE `Users` (
-  `chat_id` int NOT NULL,
+  `chat_id` bigint NOT NULL,
   `name` varchar(255) NOT NULL,
   `age` int NOT NULL,
   `gender` varchar(50) NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE `Users` (
 
 CREATE TABLE `Workouts` (
   `id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `type_id` int NOT NULL,
   `date` date NOT NULL,
   `start` time NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE `Workouts` (
 
 CREATE TABLE `Workout_types` (
   `id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `name` varchar(255) NOT NULL,
   `is_active` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

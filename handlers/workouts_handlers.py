@@ -148,7 +148,7 @@ async def process_select_exercise_for_del(callback: CallbackQuery, state: FSMCon
     """Обработка выбора упражнения для удаления"""
     exerecise_del = await database.delete_exercise(int(callback.data))
     data = await state.get_data()
-    data['completed_exercises'].remove(exerecise_del[0])
+    data['completed_exercises'].remove(exerecise_del)
     await callback.answer()
     await callback.message.edit_text(
         text=LEXICON['delete_exercise'],
