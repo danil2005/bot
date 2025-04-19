@@ -50,17 +50,19 @@ async def process_create_workout(callback: CallbackQuery, state: FSMContext):
     """Обработка инлайн-кнопки создать новый тип тренировки"""
     await callback.answer()
     await callback.message.delete()
-    await callback.message.answer(LEXICON["enter_name_workout"])
+    sent_message = await callback.message.answer(LEXICON["enter_name_workout"])
     await state.set_state(FSMFillForm.enter_name_workout)
-    await state.update_data(message_id=callback.message.message_id + 1)
+    await state.update_data(message_ids=[sent_message.message_id,])
 
 
 @router.message(StateFilter(FSMFillForm.enter_name_workout))
 async def process_enter_name_workout(message: Message, state: FSMContext):
     """Обработка ввода названия нового типа тренировки"""
+    data = await state.get_data()
+    data["message_ids"].append(message.message_id)
+
     if await database.add_new_workout_type(message.chat.id, message.text):
-        data = await state.get_data()
-        for i in range(data['message_id'], message.message_id + 1):
+        for i in data["message_ids"]:
             await message.bot.delete_message(message.chat.id, i)
 
         await message.answer(
@@ -68,7 +70,9 @@ async def process_enter_name_workout(message: Message, state: FSMContext):
         )
         await state.set_state(FSMFillForm.main_menu)
     else:
-        await message.answer(LEXICON["repeat_name_workout"])
+        sent_message = await message.answer(LEXICON["repeat_name_workout"])
+        data["message_ids"].append(sent_message.message_id)
+        await state.update_data(message_ids=data["message_ids"])
 
 
 @router.callback_query(StateFilter(FSMFillForm.edite_workouts), F.data == "archive")
