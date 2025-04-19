@@ -90,7 +90,7 @@ async def process_enter_name_exercise(message: Message, state: FSMContext):
     await message.bot.delete_message(message.chat.id, message.message_id - 1)
     if id_exercise_type:
         data = await state.get_data()
-        data["completed_exercises"].append(str(id_exercise_type))
+        data["completed_exercises"].append(id_exercise_type)
         id_exercise = await database.start_exercise(id_exercise_type, data["workout"])
         await message.bot.edit_message_text(
             chat_id=message.chat.id,
